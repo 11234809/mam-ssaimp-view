@@ -5,7 +5,7 @@
  * @Author: ysl
  * @Date: 2025-05-28 15:55:53
  * @LastEditors: ysl
- * @LastEditTime: 2025-06-04 16:18:02
+ * @LastEditTime: 2025-06-04 20:49:55
 =======
  * @Description: 
  * @Version: 
@@ -707,7 +707,7 @@ onActivated(() => {
   flex-direction: column;
   justify-content: space-between;
   height: 33.3vh;
-  background: url("../../images/组12398.png") no-repeat;
+  background: url("../../images/组2398.png") no-repeat;
   background-position: center 0;
   position: relative;
 }
