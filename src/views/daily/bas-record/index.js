@@ -1,0 +1,23 @@
+// 需要转为数值类型的键
+export const keyList = [
+  "chargingParkNumYear",
+  "chargingParkNumNew",
+  "chargingParkNumTotal",
+  "chargingParkNumRate",
+  "chargingPileNumYear",
+  "chargingPileNumNew",
+  "chargingPileNumTotal",
+  "chargingPileNumRate",
+  "superChargingPileNumYear",
+  "superChargingPileNumNew",
+  "superChargingPileNumTotal",
+  "superChargingPileNumRate",
+  "superChargingGunNumYear",
+  "superChargingGunNumNew",
+  "superChargingGunNumTotal",
+  "superChargingGunNumRate",
+  "chargingParkNum",
+  "chargingPileNum",
+  "superChargingPileNum",
+  "superChargingGunNum",
+];

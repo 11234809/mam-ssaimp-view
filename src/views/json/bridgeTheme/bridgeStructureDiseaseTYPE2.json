@@ -1,0 +1,29 @@
+{
+  "records": [
+    {
+      "positionName": "翼墙耳墙",
+      "count": "33"
+    },
+    {
+      "positionName": "锥坡护坡",
+      "count": "24"
+    },
+    {
+      "positionName": "伸缩缝",
+      "count": "15"
+    },
+    {
+      "positionName": "系件",
+      "count": "22"
+    },
+    {
+      "positionName": "桥墩",
+      "count": "14"
+    },
+    {
+      "positionName": "桥台",
+      "count": "13"
+    }
+
+  ]
+}

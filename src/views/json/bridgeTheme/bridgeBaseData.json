@@ -1,0 +1,39 @@
+{
+  "totalLength": "1066655.62",
+  "totalCount": "5186",
+  "records": [
+    {
+      "typeName": "小桥",
+      "count": "462"
+    },
+    {
+      "typeName": "中桥",
+      "count": "1121"
+    },
+    {
+      "typeName": "大桥",
+      "count": "2380"
+    },
+    {
+      "typeName": "特大桥",
+      "count": "137"
+    },
+    {
+      "typeName": "人行天桥",
+      "count": "540"
+    },
+    {
+      "typeName": "车行天桥",
+      "count": "41"
+    },
+    {
+      "typeName": "匝道桥",
+      "count": "495"
+    },
+    {
+      "typeName": "涵洞",
+      "count": "8078"
+    }
+
+  ]
+}

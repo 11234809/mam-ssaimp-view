@@ -1,0 +1,24 @@
+{
+  "records": [
+    {
+      "bridgeName": "共和乌江特大桥右线",
+      "warning": "伸缩缝13_R-2f橡胶条破损"
+    },
+    {
+      "bridgeName": "外环江津长江大桥左线",
+      "warning": "索塔11_1 2裂缝"
+    },
+    {
+      "bridgeName": "忠州长江特大桥左线",
+      "warning": "桥台4_2剥落、露筋"
+    },
+    {
+      "bridgeName": "朝阳寺特大桥右线",
+      "warning": "上部承重构件9_R4空洞、孔洞"
+    },
+    {
+      "bridgeName": "荔枝乌江特大桥左线",
+      "warning": "主梁10_1混凝土老化、腐蚀"
+    }
+  ]
+}

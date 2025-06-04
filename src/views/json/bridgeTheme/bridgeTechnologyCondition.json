@@ -1,0 +1,25 @@
+{
+  "records": [
+    {
+      "technologyName": "一类",
+      "ratio": "1188"
+    },
+    {
+      "technologyName": "二类",
+      "ratio": "4401"
+    },
+    {
+      "technologyName": "三类",
+      "ratio": "22"
+    },
+    {
+      "technologyName": "四类",
+      "ratio": "0"
+    },
+    {
+      "technologyName": "五类",
+      "ratio": "0"
+    }
+
+  ]
+}

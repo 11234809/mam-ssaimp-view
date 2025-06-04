@@ -1,0 +1,12 @@
+{
+  "records": [
+    {
+      "bridgeName": "1号桥",
+      "money": "8000"
+    },
+    {
+      "bridgeName": "2号桥",
+      "money": "10000"
+    }
+  ]
+}

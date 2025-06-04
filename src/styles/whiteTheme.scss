@@ -1,0 +1,178 @@
+/* 浅色主题 */
+html[data-theme="white"],
+body[data-theme="white"] {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    // 主页面背景颜色
+    --mainBgColor: #114484ff;
+    // 主页面背景图片
+    --mainBgImg: url("@/assets/images/mainBg1.png");
+    // 顶部导航字体颜色
+    --headerTextColor: #ffffff;
+    // 无色/透明色
+    --nullColor: transparent;
+
+    // 按钮背景颜色
+    --btnBgColor: #114484;
+    // 按钮字体颜色
+    --btnTextColor: #ffffff;
+    // 白色按钮字体颜色
+    --whiteBtnTextColor: #114484;
+    // 白色按钮边框颜色
+    --whiteBtnBgColor: #114484;
+    // 灰色按钮字体颜色
+    --greyBtnTextColor: #114484;
+    // 灰色按钮边框颜色
+    --greyBtnBgColor: rgba(17, 68, 132, 0.18);
+    // 按钮 鼠标移入hover 背景颜色
+    --btnHoverBgColor: #114484;
+    // 按钮 鼠标移入hover 字体颜色
+    --btnHoverTextColor: #ffffff;
+    // 按钮 鼠标按下active 背景颜色
+    --btnActiveBgColor: #114484;
+    // 按钮 鼠标按下active 字体颜色
+    --btnActiveTextColor: #ffffff;
+
+    // 左侧边栏背景颜色
+    --leftMenuBgColor: linear-gradient(170deg, #eef7ff 0%, #eef7ff00 100%);
+    // 左侧边栏字体颜色
+    --leftMenuTextColor: #ffffff;
+    // 左侧边栏 鼠标选中active 字体颜色
+    --leftMenuActiveTextColor: #5188e5;
+    // 左侧边栏 鼠标移入hover 背景颜色
+    --leftMenuHoverBgColor: #c4d8ff78;
+    // 左侧边栏阴影偏移
+    --leftMenuBoxShadow: 1px 0px 0px 0px #0000001a;
+
+    // 右侧内容块背景颜色
+    --rightContentBgColor: #ffffff;
+
+    // 组件标题字体颜色
+    --componentTextColor: #000000;
+    // 表格组件边框颜色
+    --tableBorderColor: #dcdcdc;
+    //表格组件hover row颜色
+    --tableHoverColor: #e6efff;
+    // 表格组件header背景颜色
+    --tableHeaderBgColor: #eaeef8;
+
+    // 分页组件页码字体颜色
+    --pageTextColor: #000000;
+    // 分页组件页码active 背景颜色
+    --pageActiveBgColor: #f6f8fc;
+    // 分页组件页码active 字体颜色
+    --pageActiveTextColor: #000000;
+
+    // 表单组件下拉框 边框颜色
+    --formSelectBorderColor: #dcdcdc;
+    // 表单组件下拉框 边框颜色-hover状态
+    --formSelectBorderHoverColor: #000000;
+    // 表单组件下拉框 弹窗hover状态字体颜色
+    --formSelectDiaBgHoverColor: #dcdcdc;
+    // 表单组件下拉框 placeholder字体颜色
+    --formSelectPlaceholderColor: #606266;
+    // 表单组件 input框 边框颜色
+    --formInputBorderColor: #dcdcdc;
+    // 表单组件 input框 边框颜色-hover状态
+    --formInputBorderHoverColor: #dcdcdc;
+    // 表单组件 input框 边框颜色-focus状态
+    --formInputBorderFocusColor: #dcdcdc;
+    // 表单组件 级联选择框 边框颜色
+    --formCascaderBorderColor: #dcdcdc;
+    // 表单组件 级联选择框 边框颜色-hover状态
+    --formCascaderBorderColor: #dcdcdc;
+    // 故障申报列表字体颜色
+    --processLTextColor: #000000;
+    // 故障申报列表背景颜色-左
+    --processLBgColor: #eaeef8;
+    // 故障申报列表背景颜色-右
+    --processRBgColor: #f5f8ff;
+    // 电子围栏，抽屉背景色
+    --drawerHeaderBgColor: #ffffff;
+    --drawerHeaderTextColor: #ffffff;
+    --drawerHeaderBgColor: #ffffff;
+
+    // 变量定义
+    --themeButtonTextColor: #20396b;
+    /* 切换按钮文字颜色 */
+    --themeButtonBgColor: none;
+    /* 切换按钮背景颜色 */
+    --bgBodyColor: #dcdcdc;
+    /* border 颜色 + Tree 树形控件 + Select 选择器 hover事件 */
+    --bgGradientBodyColor: linear-gradient(134deg, #ffffff 0%, #ffffff 100%);
+    /* 主题部分背景颜色 */
+    --bgMenuColor: transparent;
+    /* 侧边栏 导航栏背景颜色 */
+    --boxBgColor: rgba(255, 255, 255, 0.9);
+    /* 组件背景颜色 */
+    --hoverColor: #dae8ff4a;
+    /* 表格鼠标移入hover */
+    --nullBgColor: #ffffff;
+    /* 详情 维修信息 仓库名称 备品备件表格背景 */
+    --inputBgColor: rgba(255, 255, 255, 0.9);
+    /* input 背景颜色 */
+    --inputDisabledBgColor: rgba(255, 255, 255, 0.9);
+    /* 详情 input 背景颜色 */
+    --textColor: #000000;
+    /* 侧边栏 表头字体颜色 */
+    --textHoverColor: #5188e5;
+    /* 侧边栏移入后字体颜色 */
+    --tableTextColor: #000000;
+    /* 表格字体颜色 */
+    --btnTextColor: #ffffff;
+    /* 按钮 + 详情 时间轴 背景颜色 */
+    --btnHoverColor: #5858e3e8;
+    /* 按钮鼠标移入hover */
+    --btnLinkColor: #c6d1fc;
+    --checkboxDisableTextColor: #000000;
+    /* 面包屑表头字体颜色 */
+    --checkboxDisableBgColor: #91a6c5;
+    --checkboxDisableBorderColor: #a8b3c5;
+    // --datepickerOffTextColor: #626773;
+    --timePanelBtnConfirm: #409eff;
+    --menuHoverBgColor: #f6f8fc;
+    /* 侧边栏 hover事件 */
+    --btnLinkBgColor: #0052d9;
+    /* 取消按钮 背景颜色 */
+    --loadBgColor: #cccccc;
+    /* 加载背景颜色 */
+
+    /* 菜单边框颜色 */
+    --menuBorderColor: #e2e7f5;
+    /* tab选中文字颜色 */
+    --tabActiveTextColor: #98a4bf;
+    /* 报修单 */
+    --processLBgColor: #eaeef8;
+    --warrantyRepairProcessLColor: #0052d9;
+    --warrantyRepairProcessRBgColor: #f5f8ff;
+    --warrantyRepairProcessRColor: #20396b;
+    --tabsActiveColor: #0052d9;
+    --boxshadow: 0px 0px 0px 0px transparent;
+
+    --headBgImg: "../../assets/images/headBg.png";
+    --btnOpacityColor: #6886ff1a;
+    --drawerLineColor: #2d57ff1a;
+
+    --base-tree-top-left-color: #409EFF;
+    --base-table-top-left-color: #409EFF;
+    --base-search-top-left-color: #409EFF;
+
+    // --iconProcess: url("@/assets/images/maintenance/maintenance-process-light.png");
+    // --iconClassify: url("@/assets/images/maintenance/maintenance-classify-light.png");
+    // --iconFlow: url("@/assets/images/maintenance/maintenance-flow-light.png");
+    // --iconGrade: url("@/assets/images/maintenance/maintenance-grade-light.png");
+
+    // --iconOrg: url("@/assets/images/maintenance/maintenance-line-org-light.png");
+    // --iconInfo: url("@/assets/images/maintenance/maintenance-line-info-light.png");
+    // --iconPerson: url("@/assets/images/maintenance/maintenance-line-person-light.png");
+    // --iconTime: url("@/assets/images/maintenance/maintenance-line-time-light.png");
+
+    /* 工作台icons start */
+
+    // 特殊车辆驶入情况
+    --iconImgUrl: url("@/assets/images/login/login-user.png") no-repeat center center;
+
+    /* 工作台icons end */
+}
