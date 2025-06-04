@@ -4,7 +4,7 @@
  * @Author: ysl
  * @Date: 2025-05-28 15:55:53
  * @LastEditors: ysl
- * @LastEditTime: 2025-06-04 18:25:04
+ * @LastEditTime: 2025-06-04 19:33:19
 -->
 <template>
   <keep-alive>
@@ -343,54 +343,54 @@ const mapEcharts = async () => {
 const mapLoaded = async () => {
   const res = await getSmartEnergyLocation();
   mapData.value = res.data.records;
-  const list = [
-    {
-      type: "2",
-      lng: 108.232755,
-      lat: 30.45502,
-    },
-  ];
+  // const list = [
+  //   {
+  //     type: "2",
+  //     lng: 108.232755,
+  //     lat: 30.45502,
+  //   },
+  // ];
   const deepCopiedRecords = JSON.parse(JSON.stringify(res.data.records));
 
   // 转换为统一格式
-  // const list = [];
-  // deepCopiedRecords.forEach((item) => {
-  //   if (item.chargeStationBean) {
-  //     list.push({
-  //       type: "1",
-  //       lng: Number(item.chargeStationBean.csLng),
-  //       lat: Number(item.chargeStationBean.csLat),
-  //     });
-  //   }
-  //   if (item.oilBean) {
-  //     list.push({
-  //       type: "2",
-  //       lng: Number(item.oilBean.oilLng),
-  //       lat: Number(item.oilBean.oilLat),
-  //     });
-  //   }
-  //   if (item.airBean) {
-  //     list.push({
-  //       type: "3",
-  //       lng: Number(item.airBean.airLng),
-  //       lat: Number(item.airBean.airLat),
-  //     });
-  //   }
-  //   if (item.exBean) {
-  //     list.push({
-  //       type: "4",
-  //       lng: Number(item.exBean.exLng),
-  //       lat: Number(item.exBean.exLat),
-  //     });
-  //   }
-  //   if (item.gfBean) {
-  //     list.push({
-  //       type: "5",
-  //       lng: Number(item.gfBean.gfLng),
-  //       lat: Number(item.gfBean.gfLat),
-  //     });
-  //   }
-  // });
+  const list = [];
+  deepCopiedRecords.forEach((item) => {
+    if (item.chargeStationBean) {
+      list.push({
+        type: "1",
+        lng: Number(item.chargeStationBean.csLng),
+        lat: Number(item.chargeStationBean.csLat),
+      });
+    }
+    if (item.oilBean) {
+      list.push({
+        type: "2",
+        lng: Number(item.oilBean.oilLng),
+        lat: Number(item.oilBean.oilLat),
+      });
+    }
+    if (item.airBean) {
+      list.push({
+        type: "3",
+        lng: Number(item.airBean.airLng),
+        lat: Number(item.airBean.airLat),
+      });
+    }
+    if (item.exBean) {
+      list.push({
+        type: "4",
+        lng: Number(item.exBean.exLng),
+        lat: Number(item.exBean.exLat),
+      });
+    }
+    if (item.gfBean) {
+      list.push({
+        type: "5",
+        lng: Number(item.gfBean.gfLng),
+        lat: Number(item.gfBean.gfLat),
+      });
+    }
+  });
   console.log(list, "=======================");
 
   mapRef.value.setMarkers(list);
