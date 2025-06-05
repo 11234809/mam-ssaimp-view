@@ -1,6 +1,6 @@
 <template>
   <div id="container" v-bind="$attrs">
-    <ul v-if="props.smartEnergy" class="map-legend">
+    <ul v-if="props.smartEnergy == 'smartEnergy'" class="map-legend">
       <li
         @click="legendClick('1')"
         :class="{ active: activeList.includes('1') }"
@@ -74,10 +74,11 @@ import cqJson from "@/components/map/data/chongqing.json";
 
 const props = defineProps({
   smartEnergy: {
-    type: Boolean,
-    default: true,
+    type: String,
+    default: null,
   },
 });
+
 const emit = defineEmits(["mapLoaded", "markerClick"]);
 
 const activeList = ref(["1", "2", "3", "4", "5"]);
@@ -99,7 +100,7 @@ function setMarkers(list) {
   list.map((item) => {
     const { type, lng, lat } = item;
     let iconUrl = null;
-    if (props.smartEnergy) {
+    if (props.smartEnergy == "smartEnergy") {
       if (type === "1") {
         iconUrl = new URL("./img/smartEnergy(1).png", import.meta.url).href;
       } else if (type === "2") {
@@ -143,13 +144,15 @@ function setMarkers(list) {
     marker.setLabel({
       content: `
     <div onclick="labelClick(event)" style="background: transparent" class="mark-label">
-      ${  props.smartEnergy
+      ${
+        props.smartEnergy == "smartEnergy"
           ? ``
-          :`<img src="${src}" />
+          : `<img src="${src}" />
              <img src="${src}" />
              <img src="${src}" />
              <img src="${src}" />
-             <img src="${src}" />`}
+             <img src="${src}" />`
+      }
     </div>
   `,
     });
@@ -297,21 +300,48 @@ onMounted(() => {
             fillColor: "#131925", // 遮罩背景色黑色
             fillOpacity: 0.1,
           });
-          map.add(polygon);
-          // pathArray.push(polygon)
-          //   })
-          //   // 加载geojson数据
-        });
+          wall.transparent = true
+          wall.backOrFront = 'both';
+          object3Dlayer.add(wall)
 
-        // 创建一个 Marker 实例：
-        // const marker = new AMap.Marker({
-        //   position: [108.232755,30.45502],   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-        //   title: 'hhhhhh',
-        //   // icon: icon
-        // });
-        // map.add(marker)
 
-        mapLoaded();
+          // 读取本地geojson文件（假设文件路径为src/assets/data/geojsondata.geojson）
+          // fetch('@/assets/data/chongqing.json')
+          //     .then((response) => response.json())
+          //     .then((geojson) => {
+          //       console.log(geojson, 'geojson')
+          // const pathArray = []
+          cqJson.features?.map(item => {
+            console.log(item.geometry.coordinates[0], '22')
+            const polygon = new AMap.Polygon({
+              path: item.geometry.coordinates,
+              strokeColor: '#00BFFF', //城市边界颜色 //城市边界颜色
+              strokeWeight: 1,
+              fillColor: '#131925', // 遮罩背景色黑色
+              fillOpacity: .1
+            })
+            map.add(polygon)
+            // pathArray.push(polygon)
+            //   })
+            //   // 加载geojson数据
+          })
+
+          // 创建一个 Marker 实例：
+          // const marker = new AMap.Marker({
+          //   position: [108.232755,30.45502],   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+          //   title: 'hhhhhh',
+          //   // icon: icon
+          // });
+          // map.add(marker)
+
+
+          mapLoaded()
+        })
+
+
+      })
+      .catch((e) => {
+        console.log(e);
       });
     })
     .catch((e) => {

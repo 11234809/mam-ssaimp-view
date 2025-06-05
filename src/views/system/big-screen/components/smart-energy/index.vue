@@ -4,257 +4,255 @@
  * @Author: ysl
  * @Date: 2025-05-28 15:55:53
  * @LastEditors: ysl
- * @LastEditTime: 2025-06-04 19:33:19
+ * @LastEditTime: 2025-06-05 10:58:12
 -->
 <template>
-  <keep-alive>
-    <div class="smart-energy">
-      <div class="smart-energy-left">
-        <!-- 充电信息 -->
-        <div class="smart-energy-left-item">
-          <div class="item-top">充电信息</div>
-          <TimeTypeSelector
-            v-model="informationStatement.selectTimeType"
-            @select="handleSelectInformation"
-          />
-          <div class="item-bottom">
-            <div class="item-bottom-one">
-              <div class="item-bottom-one-left">
-                <div class="item-bottom-one-left-top" @click="handleChargeElec">
-                  {{ informationData.chargeElec }}
-                </div>
-                <div class="item-bottom-one-left-bottom">充电量kWh</div>
+  <div class="smart-energy">
+    <div class="smart-energy-left">
+      <!-- 充电信息 -->
+      <div class="smart-energy-left-item">
+        <div class="item-top">充电信息</div>
+        <TimeTypeSelector
+          v-model="informationStatement.selectTimeType"
+          @select="handleSelectInformation"
+        />
+        <div class="item-bottom">
+          <div class="item-bottom-one">
+            <div class="item-bottom-one-left">
+              <div class="item-bottom-one-left-top" @click="handleChargeElec">
+                {{ informationData.chargeElec }}
               </div>
-              <div class="item-bottom-one-center" />
-              <div class="item-bottom-one-right">
-                <div class="item-bottom-one-right-top" @click="handleChargeNum">
-                  {{ informationData.chargeNum }}
-                </div>
-                <div class="item-bottom-one-right-bottom">充电次数</div>
-              </div>
+              <div class="item-bottom-one-left-bottom">充电量kWh</div>
             </div>
-            <div class="item-bottom-two">
-              <div class="item-bottom-two-left">
-                <div class="item-bottom-two-left-top" @click="handleChargeFee">
-                  {{ informationData.chargeFee }}
-                </div>
-                <div class="item-bottom-two-left-bottom">充电电费(元)</div>
+            <div class="item-bottom-one-center" />
+            <div class="item-bottom-one-right">
+              <div class="item-bottom-one-right-top" @click="handleChargeNum">
+                {{ informationData.chargeNum }}
               </div>
-              <div class="item-bottom-two-center" />
-              <div class="item-bottom-two-right">
-                <div
-                  class="item-bottom-two-right-top"
-                  @click="handleChargeServiceFee"
-                >
-                  {{ informationData.chargeServiceFee }}
-                </div>
-                <div class="item-bottom-two-right-bottom">充电服务费(元)</div>
-              </div>
+              <div class="item-bottom-one-right-bottom">充电次数</div>
             </div>
           </div>
-        </div>
-        <!-- 服务区充电排名 -->
-        <div class="smart-energy-left-item">
-          <div class="item-top">服务区充电排名</div>
-          <TimeTypeSelector
-            v-model="chargingRankingStatement.selectTimeType"
-            @select="handleSelectChargingRanking"
-          />
-          <div class="item-bottom">
-            <div
-              id="charging_ranking_echarts"
-              style="width: 100%; height: 260px"
-            ></div>
-          </div>
-        </div>
-        <!-- 加气信息 -->
-        <div class="smart-energy-left-item">
-          <div class="item-top">加气信息</div>
-          <TimeTypeSelector
-            v-model="informationAerate.selectTimeType"
-            @select="handleSelectAerate"
-          />
-          <div class="item-bottom item-bottom-table scroll-wrapper">
-            <AutoScrollTable
-              :data="aerateData"
-              :columns="columns"
-              @row-click="handleAerateClick"
-            />
+          <div class="item-bottom-two">
+            <div class="item-bottom-two-left">
+              <div class="item-bottom-two-left-top" @click="handleChargeFee">
+                {{ informationData.chargeFee }}
+              </div>
+              <div class="item-bottom-two-left-bottom">充电电费(元)</div>
+            </div>
+            <div class="item-bottom-two-center" />
+            <div class="item-bottom-two-right">
+              <div
+                class="item-bottom-two-right-top"
+                @click="handleChargeServiceFee"
+              >
+                {{ informationData.chargeServiceFee }}
+              </div>
+              <div class="item-bottom-two-right-bottom">充电服务费(元)</div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="smart-energy-center">
-        <div class="smart-energy-center-header">
-          <!-- 充电平均时长 -->
-          <div class="center-header-item">
-            <img
-              src="../../images/smartEnergy/组 7804 (1).png"
-              style="object-fit: left; width: 86px; height: 71px"
-            />
-            <div class="center-header-item-bottom">
-              <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{
-                  centerHeaderData.chargeTimeAvg
-                }}</span>
-                <span class="center-header-item-bottom-time-unit">分钟</span>
-              </div>
-              <div class="center-header-item-bottom-label">平均充电时长</div>
-            </div>
-          </div>
-          <!-- 时长利用率 -->
-          <div class="center-header-item">
-            <img
-              src="../../images/smartEnergy/组 7804 (2).png"
-              style="object-fit: left; width: 86px; height: 71px"
-            />
-            <div class="center-header-item-bottom">
-              <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{
-                  centerHeaderData.chargeTimeRate
-                }}</span>
-                <span class="center-header-item-bottom-time-unit">%</span>
-              </div>
-              <div class="center-header-item-bottom-label">时长利用率</div>
-            </div>
-          </div>
-          <div class="center-header-item">
-            <img
-              src="../../images/smartEnergy/组 7804 (3).png"
-              style="object-fit: left; width: 86px; height: 71px"
-            />
-            <div class="center-header-item-bottom">
-              <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{
-                  centerHeaderData.capacityRate
-                }}</span>
-                <span class="center-header-item-bottom-time-unit">%</span>
-              </div>
-              <div class="center-header-item-bottom-label">容量利用率</div>
-            </div>
-          </div>
-          <div class="center-header-item">
-            <img
-              src="../../images/smartEnergy/组 7804 (4).png"
-              style="object-fit: left; width: 86px; height: 71px"
-            />
-            <div class="center-header-item-bottom">
-              <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{
-                  centerHeaderData.oilCarNumber
-                }}</span>
-              </div>
-              <div class="center-header-item-bottom-label">加油车次</div>
-            </div>
-          </div>
-          <div class="center-header-item">
-            <img
-              src="../../images/smartEnergy/组 7804 (5).png"
-              style="object-fit: left; width: 86px; height: 71px"
-            />
-            <div class="center-header-item-bottom">
-              <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{
-                  centerHeaderData.gasNumber
-                }}</span>
-              </div>
-              <div class="center-header-item-bottom-label">加气量</div>
-            </div>
-          </div>
-          <div class="center-header-item">
-            <img
-              src="../../images/smartEnergy/组 7804 (6).png"
-              style="object-fit: left; width: 86px; height: 71px"
-            />
-            <div class="center-header-item-bottom">
-              <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{
-                  centerHeaderData.exNumber
-                }}</span>
-              </div>
-              <div class="center-header-item-bottom-label">换电车次</div>
-            </div>
-          </div>
-          <div class="center-header-item">
-            <img
-              src="../../images/smartEnergy/组 7804 (7).png"
-              style="object-fit: left; width: 86px; height: 71px"
-            />
-            <div class="center-header-item-bottom">
-              <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{
-                  centerHeaderData.photovoltaicNumber
-                }}</span>
-              </div>
-              <div class="center-header-item-bottom-label">光伏发电量</div>
-            </div>
-          </div>
-        </div>
-        <div style="padding: 10px">
-          <el-input
-            v-model="input"
-            style="width: 278px; border-radius: 2px; border: 1px #5bc7fc dashed"
-            placeholder="服务区搜索"
-            suffix-icon="Search"
-          />
-        </div>
-        <div class="center-bottom" style="height: 99vh">
-          <Map
-            ref="mapRef"
-            @markerClick="markerClick"
-            @map-loaded="mapLoaded"
-            :smartEnergy="smartEnergy"
-          />
+      <!-- 服务区充电排名 -->
+      <div class="smart-energy-left-item">
+        <div class="item-top">服务区充电排名</div>
+        <TimeTypeSelector
+          v-model="chargingRankingStatement.selectTimeType"
+          @select="handleSelectChargingRanking"
+        />
+        <div class="item-bottom">
+          <div
+            id="charging_ranking_echarts"
+            style="width: 100%; height: 260px"
+          ></div>
         </div>
       </div>
-      <div class="smart-energy-right" @click="handleDialog">
-        <div class="smart-energy-right-item">
-          <div class="item-top">加油站排名</div>
-          <TimeTypeSelector
-            v-model="comeOnStatement.selectTimeType"
-            @select="handleSelectComeOn"
+      <!-- 加气信息 -->
+      <div class="smart-energy-left-item">
+        <div class="item-top">加气信息</div>
+        <TimeTypeSelector
+          v-model="informationAerate.selectTimeType"
+          @select="handleSelectAerate"
+        />
+        <div class="item-bottom item-bottom-table scroll-wrapper">
+          <AutoScrollTable
+            :data="aerateData"
+            :columns="columns"
+            @row-click="handleAerateClick"
           />
-          <div class="item-bottom">
-            <div id="come_on_echarts" style="width: 100%; height: 260px"></div>
-          </div>
-        </div>
-        <div class="smart-energy-right-item">
-          <div class="item-top">换电信息</div>
-          <TimeTypeSelector
-            v-model="replaceBatteryStatement.selectTimeType"
-            @select="handleSelectReplaceBattery"
-          />
-          <div class="item-bottom item-bottom-table scroll-wrapper">
-            <AutoScrollTable
-              :data="replaceBatteryData"
-              :columns="replaceBatteryColumns"
-              @row-click="replaceBatteryClick"
-            />
-          </div>
-        </div>
-        <div class="smart-energy-right-item">
-          <div class="item-top">光伏发电信息</div>
-          <TimeTypeSelector
-            v-model="photovoltaicStatement.selectTimeType"
-            @select="handleSelectPhotovoltaic"
-          />
-          <div class="item-bottom item-bottom-table scroll-wrapper">
-            <AutoScrollTable
-              :data="photovoltaicData"
-              :columns="photovoltaicColumns"
-              @row-click="photovoltaicClick"
-            />
-          </div>
         </div>
       </div>
     </div>
-  </keep-alive>
-
-  <SmartEnergyGisDialog
-    v-model="dialogVisible"
-    :data="chargeStationData"
-    :subTitle="subTitle"
-    style="background: #0f273d"
-  />
+    <div class="smart-energy-center">
+      <div class="smart-energy-center-header">
+        <!-- 充电平均时长 -->
+        <div class="center-header-item">
+          <img
+            src="../../images/smartEnergy/组 7804 (1).png"
+            style="object-fit: left; width: 86px; height: 71px"
+          />
+          <div class="center-header-item-bottom">
+            <div class="center-header-item-bottom-time">
+              <span class="center-header-item-bottom-time-num">{{
+                centerHeaderData.chargeTimeAvg
+              }}</span>
+              <span class="center-header-item-bottom-time-unit">分钟</span>
+            </div>
+            <div class="center-header-item-bottom-label">平均充电时长</div>
+          </div>
+        </div>
+        <!-- 时长利用率 -->
+        <div class="center-header-item">
+          <img
+            src="../../images/smartEnergy/组 7804 (2).png"
+            style="object-fit: left; width: 86px; height: 71px"
+          />
+          <div class="center-header-item-bottom">
+            <div class="center-header-item-bottom-time">
+              <span class="center-header-item-bottom-time-num">{{
+                centerHeaderData.chargeTimeRate
+              }}</span>
+              <span class="center-header-item-bottom-time-unit">%</span>
+            </div>
+            <div class="center-header-item-bottom-label">时长利用率</div>
+          </div>
+        </div>
+        <div class="center-header-item">
+          <img
+            src="../../images/smartEnergy/组 7804 (3).png"
+            style="object-fit: left; width: 86px; height: 71px"
+          />
+          <div class="center-header-item-bottom">
+            <div class="center-header-item-bottom-time">
+              <span class="center-header-item-bottom-time-num">{{
+                centerHeaderData.capacityRate
+              }}</span>
+              <span class="center-header-item-bottom-time-unit">%</span>
+            </div>
+            <div class="center-header-item-bottom-label">容量利用率</div>
+          </div>
+        </div>
+        <div class="center-header-item">
+          <img
+            src="../../images/smartEnergy/组 7804 (4).png"
+            style="object-fit: left; width: 86px; height: 71px"
+          />
+          <div class="center-header-item-bottom">
+            <div class="center-header-item-bottom-time">
+              <span class="center-header-item-bottom-time-num">{{
+                centerHeaderData.oilCarNumber
+              }}</span>
+            </div>
+            <div class="center-header-item-bottom-label">加油车次</div>
+          </div>
+        </div>
+        <div class="center-header-item">
+          <img
+            src="../../images/smartEnergy/组 7804 (5).png"
+            style="object-fit: left; width: 86px; height: 71px"
+          />
+          <div class="center-header-item-bottom">
+            <div class="center-header-item-bottom-time">
+              <span class="center-header-item-bottom-time-num">{{
+                centerHeaderData.gasNumber
+              }}</span>
+            </div>
+            <div class="center-header-item-bottom-label">加气量</div>
+          </div>
+        </div>
+        <div class="center-header-item">
+          <img
+            src="../../images/smartEnergy/组 7804 (6).png"
+            style="object-fit: left; width: 86px; height: 71px"
+          />
+          <div class="center-header-item-bottom">
+            <div class="center-header-item-bottom-time">
+              <span class="center-header-item-bottom-time-num">{{
+                centerHeaderData.exNumber
+              }}</span>
+            </div>
+            <div class="center-header-item-bottom-label">换电车次</div>
+          </div>
+        </div>
+        <div class="center-header-item">
+          <img
+            src="../../images/smartEnergy/组 7804 (7).png"
+            style="object-fit: left; width: 86px; height: 71px"
+          />
+          <div class="center-header-item-bottom">
+            <div class="center-header-item-bottom-time">
+              <span class="center-header-item-bottom-time-num">{{
+                centerHeaderData.photovoltaicNumber
+              }}</span>
+            </div>
+            <div class="center-header-item-bottom-label">光伏发电量</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding: 10px">
+        <el-input
+          v-model="input"
+          style="width: 278px; border-radius: 2px; border: 1px #5bc7fc dashed"
+          placeholder="服务区搜索"
+          suffix-icon="Search"
+        />
+      </div>
+      <div class="center-bottom" style="height: 99vh">
+        <Map
+          ref="mapRef"
+          @markerClick="markerClick"
+          @map-loaded="mapLoaded"
+          :smartEnergy="smartEnergy"
+        />
+      </div>
+    </div>
+    <div class="smart-energy-right">
+      <div class="smart-energy-right-item">
+        <div class="item-top">加油站排名</div>
+        <TimeTypeSelector
+          v-model="comeOnStatement.selectTimeType"
+          @select="handleSelectComeOn"
+        />
+        <div class="item-bottom">
+          <div id="come_on_echarts" style="width: 100%; height: 260px"></div>
+        </div>
+      </div>
+      <div class="smart-energy-right-item">
+        <div class="item-top">换电信息</div>
+        <TimeTypeSelector
+          v-model="replaceBatteryStatement.selectTimeType"
+          @select="handleSelectReplaceBattery"
+        />
+        <div class="item-bottom item-bottom-table scroll-wrapper">
+          <AutoScrollTable
+            :data="replaceBatteryData"
+            :columns="replaceBatteryColumns"
+            @row-click="replaceBatteryClick"
+          />
+        </div>
+      </div>
+      <div class="smart-energy-right-item">
+        <div class="item-top">光伏发电信息</div>
+        <TimeTypeSelector
+          v-model="photovoltaicStatement.selectTimeType"
+          @select="handleSelectPhotovoltaic"
+        />
+        <div class="item-bottom item-bottom-table scroll-wrapper">
+          <AutoScrollTable
+            :data="photovoltaicData"
+            :columns="photovoltaicColumns"
+            @row-click="photovoltaicClick"
+          />
+        </div>
+      </div>
+    </div>
+    <SmartEnergyGisDialog
+      v-model="dialogVisible"
+      :data="chargeStationData"
+      :subTitle="subTitle"
+      @click="closeDialogFromParent"
+      style="background: #0f273d"
+    />
+  </div>
 </template>
 <script setup>
 import {
@@ -279,7 +277,7 @@ import {
   getChargeInfoByTime, // 充电信息
   getChargeRankingByServiceFullName, // 服务区充电排名
   getAirRankingByServiceFullName, // 加气排名
-  getOilCarNumberRankingByServiceAreaName, // 加油站排名
+  getOilCarNumberRankingByServiceFullName, // 加油站排名
   getExNumberRankingByServiceFullName, // 换电信息
   getPhotovoltaicRankingByServiceFullName, // 光伏发电
   getSmartEnergyChargeStation, // 充电站详情信息
@@ -298,13 +296,41 @@ const dialogVisible = ref(false);
 
 const chargeStationData = ref({});
 const subTitle = ref("");
-const handleDialog = async () => {
+const smartEnergy = ref("smartEnergy");
+const markerClick = async (item) => {
   dialogVisible.value = true;
-  const res = await getSmartEnergyChargeStation({
-    serviceAreaName: "垫江服务区（进城）",
-  });
-  subTitle.value = "充电站";
-  console.log(res.data.records[0], "页面中获取到的");
+  console.log(dialogVisible.value, "999999999999");
+  console.log(item, "markerClick");
+  const typeMap = {
+    1: {
+      api: getSmartEnergyChargeStation,
+      title: "充电站",
+    },
+    2: {
+      api: getSmartEnergyOil,
+      title: "加油站",
+    },
+    3: {
+      api: getSmartEnergyEX,
+      title: "换电站",
+    },
+    4: {
+      api: getSmartEnergyAir,
+      title: "加气站",
+    },
+    5: {
+      api: getSmartEnergyGF,
+      title: "光伏发电",
+    },
+  };
+  const config = typeMap[item.type];
+
+  let res;
+  // 充电站
+  if (config) {
+    res = await config.api({ serviceAreaName: item.serviceAreaName });
+    subTitle.value = config.title;
+  }
   chargeStationData.value = res.data.records[0];
 };
 
@@ -343,55 +369,74 @@ const mapEcharts = async () => {
 const mapLoaded = async () => {
   const res = await getSmartEnergyLocation();
   mapData.value = res.data.records;
-  // const list = [
-  //   {
-  //     type: "2",
-  //     lng: 108.232755,
-  //     lat: 30.45502,
-  //   },
-  // ];
+  const list = [
+    {
+      type: "1",
+      serviceAreaName: "垫江服务区（进城）充电站1",
+      lng: 108.232755,
+      lat: 30.45502,
+    },
+  ];
   const deepCopiedRecords = JSON.parse(JSON.stringify(res.data.records));
+  console.log(deepCopiedRecords, "deepCopiedRecords");
 
   // 转换为统一格式
-  const list = [];
-  deepCopiedRecords.forEach((item) => {
-    if (item.chargeStationBean) {
-      list.push({
-        type: "1",
-        lng: Number(item.chargeStationBean.csLng),
-        lat: Number(item.chargeStationBean.csLat),
-      });
-    }
-    if (item.oilBean) {
-      list.push({
-        type: "2",
-        lng: Number(item.oilBean.oilLng),
-        lat: Number(item.oilBean.oilLat),
-      });
-    }
-    if (item.airBean) {
-      list.push({
-        type: "3",
-        lng: Number(item.airBean.airLng),
-        lat: Number(item.airBean.airLat),
-      });
-    }
-    if (item.exBean) {
-      list.push({
-        type: "4",
-        lng: Number(item.exBean.exLng),
-        lat: Number(item.exBean.exLat),
-      });
-    }
-    if (item.gfBean) {
-      list.push({
-        type: "5",
-        lng: Number(item.gfBean.gfLng),
-        lat: Number(item.gfBean.gfLat),
-      });
-    }
-  });
-  console.log(list, "=======================");
+  // const list = [];
+  // deepCopiedRecords.forEach((item) => {
+  //   if (
+  //     item.chargeStationBean &&
+  //     item.chargeStationBean.csLng != null &&
+  //     item.chargeStationBean.csLat != null
+  //   ) {
+  //     list.push({
+  //       type: "1",
+  //       lng: Number(item.chargeStationBean.csLng),
+  //       lat: Number(item.chargeStationBean.csLat),
+  //       serviceAreaName: item.chargeStationBean.stationName,
+  //     });
+  //   }
+  //   if (
+  //     item.oilBean &&
+  //     item.oilBean.oilLng != null &&
+  //     item.oilBean.oilLat != null
+  //   ) {
+  //     list.push({
+  //       type: "2",
+  //       lng: Number(item.oilBean.oilLng),
+  //       lat: Number(item.oilBean.oilLat),
+  //       serviceAreaName: item.oilBean.oilName,
+  //     });
+  //   }
+  //   if (
+  //     item.airBean &&
+  //     item.airBean.airLng != null &&
+  //     item.airBean.airLat != null
+  //   ) {
+  //     list.push({
+  //       type: "3",
+  //       lng: Number(item.airBean.airLng),
+  //       lat: Number(item.airBean.airLat),
+  //       serviceAreaName: item.airBean.airName,
+  //     });
+  //   }
+  //   if (item.exBean && item.exBean.exLng != null && item.exBean.exLat != null) {
+  //     list.push({
+  //       type: "4",
+  //       lng: Number(item.exBean.exLng),
+  //       lat: Number(item.exBean.exLat),
+  //       serviceAreaName: item.exBean.exName,
+  //     });
+  //   }
+  //   if (item.gfBean && item.gfBean.gfLng != null && item.gfBean.gfLat != null) {
+  //     list.push({
+  //       type: "5",
+  //       lng: Number(item.gfBean.gfLng),
+  //       lat: Number(item.gfBean.gfLat),
+  //       serviceAreaName: item.gfBean.gfName,
+  //     });
+  //   }
+  // });
+  // console.log(list, "=======================");
 
   mapRef.value.setMarkers(list);
 };
@@ -697,7 +742,7 @@ const getComeOn = async (payload) => {
     selectTimeType: payload.code,
     timeList: payload.code === "6" ? payload.dateRange : [],
   };
-  const res = await getOilCarNumberRankingByServiceAreaName(params);
+  const res = await getOilCarNumberRankingByServiceFullName(params);
   comeOnData.value = res.data.records;
 };
 
@@ -979,7 +1024,7 @@ defineExpose({ refresh });
   flex-direction: column;
   justify-content: space-between;
   height: 319px;
-  background: url("../../images/smartEnergy/组12398.png") no-repeat;
+  background: url("../../images/smartEnergy/tit_bg.png") no-repeat;
   background-position: center 0;
   position: relative;
 }
@@ -990,7 +1035,7 @@ defineExpose({ refresh });
   font-size: 20px;
   font-weight: 500;
   margin-top: 8px;
-  margin-left: 6.75rem;
+  margin-left: 5.75rem;
 }
 
 .item-bottom {

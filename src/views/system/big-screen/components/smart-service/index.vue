@@ -1,19 +1,10 @@
 <!--
-<<<<<<< HEAD
  * @Descripttion: 
  * @version: 
- * @Author: ysl
+ * @Author: lkr
  * @Date: 2025-05-28 15:55:53
- * @LastEditors: ysl
- * @LastEditTime: 2025-06-04 20:49:55
-=======
- * @Description: 
- * @Version: 
- * @Autor: lkr
- * @Date: 2025-05-30 13:35:25
  * @LastEditors: lkr
- * @LastEditTime: 2025-06-04 18:13:56
->>>>>>> 7c510477f5c5635a6f834942a8e26480affbb68c
+ * @LastEditTime: 2025-06-05 09:02:04
 -->
 <template>
   <keep-alive>

@@ -4,7 +4,7 @@
  * @Author: ysl
  * @Date: 2025-05-28 15:55:53
  * @LastEditors: ysl
- * @LastEditTime: 2025-06-04 17:29:46
+ * @LastEditTime: 2025-06-05 10:20:42
 -->
 <template>
   <ScreenAdapter :width="1920" :height="1080">
@@ -77,8 +77,6 @@ const activeTheme = ref(themeBtnList.value[0])
 const activeComponent = ref(null);
 
 function handleThemeBtn(item) {
-  console.log(item, "item");
-
   activeTheme.value = item;
    nextTick(() => {
     if (item.id === 2 && activeComponent.value?.refresh) {
