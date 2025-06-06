@@ -4,7 +4,7 @@
  * @Author: ysl
  * @Date: 2025-05-28 15:55:53
  * @LastEditors: ysl
- * @LastEditTime: 2025-06-06 18:38:16
+ * @LastEditTime: 2025-06-06 18:58:12
 -->
 <template>
   <div class="smart-energy">
@@ -252,7 +252,7 @@
       v-model:visible="showDialog"
       :station-data="chargeStationData"
       :sub-title="subTitle"
-      :loading="loading"
+      :loading="dialogLoading"
       style="background: rgba(17, 47, 73, 0.7); border: 2px solid #3ee5fa"
     />
   </div>
@@ -300,7 +300,7 @@ const input = ref("");
 const showDialog = ref(false);
 
 const chargeStationData = ref({});
-const loading = ref(false);
+const dialogLoading = ref(false);
 const subTitle = ref("");
 const smartEnergy = ref("smartEnergy");
 const photoUrls = ref([]);
@@ -330,7 +330,7 @@ const markerClick = async (item) => {
   const config = typeMap[item.type];
 
   showDialog.value = true;
-  loading.value = true; // 开始加载
+  dialogLoading.value = true; // 开始加载
   let res;
   // 充电站
 
@@ -373,7 +373,7 @@ const markerClick = async (item) => {
   if (item.type != "1") {
     chargeStationData.value = data;
   }
-  loading.value = false; // 加载结束
+  dialogLoading.value = false; // 加载结束
 };
 const parsePaymentMethods = (input) => {
   if (!input) return [];

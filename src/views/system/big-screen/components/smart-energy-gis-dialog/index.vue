@@ -9,8 +9,12 @@
     <div class="dialog-title1">
       {{ subTitle }}
     </div>
-
-    <div class="dialog-content2" v-loading="loading">
+    <div
+      class="dialog-content2"
+      v-loading="loading"
+      element-loading-text="加载中..."
+      element-loading-background="transparent"
+    >
       <!-- 右侧字段信息 -->
       <div class="right-info" v-if="stationData.type == '1'">
         <!-- 充电站名称 -->
@@ -227,6 +231,10 @@ const props = defineProps({
   width: {
     type: String,
     default: "900px",
+  },
+  loading: {
+    type: Boolean,
+    default: false,
   },
 });
 
