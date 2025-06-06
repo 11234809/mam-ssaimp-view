@@ -1,8 +1,8 @@
 <!--
  * @Author: fbz
  * @Date: 2025-05-13 16:45:38
- * @LastEditors: ysl
- * @LastEditTime: 2025-05-23 14:34:37
+ * @LastEditors: lkr
+ * @LastEditTime: 2025-06-06 11:04:38
 -->
 <template>
   <div class="traffic-flow">
@@ -191,6 +191,7 @@
                   :key="index"
                   :preview-src-list="scope.row.picUrl"
                   :src="item"
+                  lazy
                   preview-teleported
                   alt="加载失败"
               />
@@ -301,6 +302,7 @@ const getDataList = async () => {
         picUrl: await processImageUrls(item.picUrl)
       }))
     )
+    console.log(tableData.value)
   } catch (error) {
     loading.value = false;
     ElMessage({

@@ -143,6 +143,8 @@ import {
 } from "@/api/carRank/index.js";
 import ExportDialog from "../../rmt/components/export-dialog/index.vue";
 import { useRouter } from "vue-router";
+import { bigScreen } from "@/store/bigScreen";
+const store=bigScreen();
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 
@@ -488,6 +490,7 @@ const handleServiceRanking = async (isWhole, isUnilateral) => {
     time: formData.time,
     timeList: formData.timeList,
     singleOrNot: isWhole ? 2 : isUnilateral ? 1 : 0,
+	largeScreen:store.chargeReportData?.largeScreen?true:false
   };
   loading1.value = true;
   await getServiceRanking(params).then((res) => {
@@ -725,6 +728,7 @@ const handleRoadRouteRanking = async () => {
     time: formData.time,
     timeList: formData.timeList,
     singleOrNot: formData.isWhole ? 2 : formData.isUnilateral ? 1 : 0,
+	largeScreen:store.chargeReportData?.largeScreen?true:false
   };
   loading2.value = true;
   await getRoadRouteRanking(params).then((res) => {
@@ -1238,6 +1242,7 @@ const handlePlaceRanking = async (placeType) => {
     timeList: formData.timeList,
     singleOrNot: formData.isWhole ? 2 : formData.isUnilateral ? 1 : 0,
     placeType: placeType,
+	largeScreen:store.chargeReportData?.largeScreen?true:false
   };
   loading3.value = true;
   await getPlaceRanking(params).then((res) => {
@@ -1253,7 +1258,9 @@ const handlePlaceRanking = async (placeType) => {
 const seasonSelect = ref();
 async function selectTimeTypeChange() {
   formData.time = "";
-  formData.timeList = [];
+  if(!store.chargeReportData.largeScreen){
+	  formData.timeList = [];
+  }
   if (formData.selectTimeType == "0") {
     formData.time = moment().subtract(0, "day").format("YYYY-MM-DD");
   } else if (formData.selectTimeType == "1") {
@@ -1280,7 +1287,7 @@ async function selectTimeTypeChange() {
     });
   } else if (formData.selectTimeType == "4") {
     formData.time = moment().format("YYYY");
-  } else if (formData.selectTimeType == "5") {
+  } else if (formData.selectTimeType == "5" && (!store.chargeReportData || !store.chargeReportData.largeScreen)) {
     formData.timeList = [
       moment().format("YYYY-MM-DD"),
       moment().format("YYYY-MM-DD"),
@@ -1429,7 +1436,20 @@ const getDictionary = () => {
   });
 };
 onActivated(() => {
-  refresh();
+	
+	if(store.chargeReportData && store.chargeReportData.largeScreen){
+		formData.selectTimeType=store.chargeReportData.selectTimeType;
+		if(store.chargeReportData.selectTimeType==5){
+			formData.timeList = [
+				moment(store.chargeReportData.queryStart).format("YYYY-MM-DD"),
+				moment(store.chargeReportData.queryEnd).format("YYYY-MM-DD"),
+			];
+		}
+		selectTimeTypeChange();
+	}else{
+		refresh();
+	}
+	
 });
 onMounted(() => {
   formData.time = moment().subtract(0, "day").format("YYYY-MM-DD");

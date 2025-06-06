@@ -7,7 +7,7 @@
  			<div class="close" @click="isShowSearch=false"></div>
  		</div>
  		
-		<div class="box-centent" v-if="formData?.basicBean">
+		<div class="box-centent screens-scroll-box" v-if="formData?.basicBean">
 			
 			<div class="top-box">
 				<img class="img" :src="formData.basicBean.files" alt="" />
@@ -59,9 +59,18 @@
 					</div>
 					
 					<div class="right-tab">
-						<div class="item">停车位</div>
-						<div class="item">停车位</div>
-						<div class="item">停车位</div>
+						<div class="item" v-if="formData.carBean.isParking==1">停车位</div>
+						<div class="item" v-if="formData.toiletBean.isToilet==1">卫生间</div>
+						<div class="item" v-if="formData.foodBean.isFoodBeverage==1">餐饮</div>
+						<div class="item" v-if="formData.marketBean.isSupermarket==1">商超</div>
+						<div class="item" v-if="formData.energyBean.isGasStation==1">加油站</div>
+						<div class="item" v-if="formData.energyBean.isAirStation==1">加气站</div>
+						<div class="item" v-if="formData.waterBean.isAddWater==1">加水站</div>
+						<div class="item" v-if="formData.energyBean.isChargingStation ==1">充电站</div> 
+						<div class="item" v-if="formData.garageBean.isGarage==1">汽修</div>
+						<div class="item" v-if="formData.roomBean.isAccommodation==1">客房</div>
+						<div class="item" v-if="formData.showerBean.isShower==1">淋浴</div>
+						<div class="item" v-if="formData.babyBean.isMotherBaby==1">母婴室</div>
 					</div>
 				</div>
 			</div>
@@ -93,67 +102,30 @@
 				</div>
 			</div>
 			
-			<div class="public-box">
-				<div class="service-public-title">餐饮</div>
+			<div class="public-box" v-if="formData.energyBean.chargeStationList.length>0">
+				<div class="service-public-title">充电站</div>
 				
 				<div class="scll-box">
 					 <div class="swiper-container">
-						  <div class="swiper-wrapper">
+						  <div class="swiper-wrapper" >
 							  
-							  <div class="scll-item swiper-slide" v-for="item in 10">
-								<div class="img"></div>
+							  <div class="scll-item swiper-slide" v-for="(item,index) in formData.energyBean.chargeStationList" :key="index">
+								<img class="img" :src="getImage(item.stationPhotos)" alt="" />
 								<div class="box-right">
 									<div class="b-right-top">
-										<div class="tit">大观服务区(茂名方向)</div>
+										<div class="tit">{{item.stationName}}</div>
 									</div>
 									
 									<div class="b-right-top">
-										<span class="top-lable blue">G65沪蓉高速</span>
-										<span class="top-lable">包间0  餐位120位</span>
+										<span class="top-lable">充电桩：2个</span>
+										<span class="top-lable">充电枪数：4个</span>
 									</div>
 									
 									
 									<div class="right-tab">
-										<div class="item">停车位</div>
-										<div class="item">停车位</div>
-										<div class="item">停车位</div>
-									</div>
-								</div>
-							  </div>
-						  </div>
-						  <!-- 如果需要导航按钮 -->
-						      <div class="swiper-button-prev"></div>
-						      <div class="swiper-button-next"></div>
-						</div>
-					
-				</div>
-				
-			</div>
-			
-			<div class="public-box">
-				<div class="service-public-title">商超</div>
-				
-				<div class="scll-box">
-					 <div class="swiper-container">
-						  <div class="swiper-wrapper">
-							  
-							  <div class="scll-item swiper-slide" v-for="item in 10">
-								<div class="img"></div>
-								<div class="box-right">
-									<div class="b-right-top">
-										<div class="tit">大观服务区(茂名方向)</div>
-									</div>
-									
-									<div class="b-right-top">
-										<span class="top-lable blue">G65沪蓉高速</span>
-										<span class="top-lable">包间0  餐位120位</span>
-									</div>
-									
-									
-									<div class="right-tab">
-										<div class="item">停车位</div>
-										<div class="item">停车位</div>
-										<div class="item">停车位</div>
+										<div class="item" v-if="item.paymentMethods && item.paymentMethods.indexOf(3)!=-1">支付宝</div>
+										<div class="item" v-if="item.paymentMethods && item.paymentMethods.indexOf(3)!=-1">微信</div>
+										<div class="item" v-if="item.paymentMethods && item.paymentMethods.indexOf(4)!=-1">APP</div>
 									</div>
 								</div>
 							  </div>
@@ -168,184 +140,253 @@
 			</div>
 			
 			
-			<div class="service-num-box">
-				<div class="item-box">
+			<div class="service-num-box list">
+				<div class="item-box" v-if="formData.foodBean.isFoodBeverage==1">
+					<div class="service-public-title">餐饮</div>
+					
+					<div class="service-more-item">
+						<div class="img"></div>
+						<div class="box-right">
+							<div class="b-right-top">
+								<div class="tit">{{formData.foodBean.name}}</div>
+						
+							</div>
+							
+							<div class="b-right-top">
+								<span class="top-lable">主要菜系：{{formData.foodBean.mainCuisine}}</span>
+							</div>
+							<div class="right-tab">
+								<div class="item">支付宝</div>
+								<div class="item">微信</div>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				<div class="item-box" v-if="formData.marketBean.isSupermarket==1">
+					<div class="service-public-title">商超</div>
+					<div class="service-more-item">
+						<div class="img"></div>
+						<div class="box-right">
+							<div class="b-right-top">
+								<div class="tit">{{formData.marketBean.supermarketRunBusiness}}</div>
+						
+							</div>
+							
+							<div class="b-right-top">
+								<span class="top-lable">经营：{{formData.marketBean.supermarketBusinessScope}}</span>
+							</div>
+							<div class="right-tab">
+								<div class="item">支付宝</div>
+								<div class="item">微信</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			
+			
+				<div class="item-box" v-if="formData.energyBean.isGasStation==1">
 					<div class="service-public-title">加油站</div>
 					
 					<div class="service-more-item">
 						<div class="img"></div>
 						<div class="box-right">
 							<div class="b-right-top">
-								<div class="tit">大观服务区大观服务区大观服务区大观服务区(茂名方向)</div>
-								<div class="top-phone">
+								<div class="tit">{{formData.energyBean.gasStationRunBusiness}}</div>
+								<!-- <div class="top-phone">
 									建成运营
-								</div>
+								</div> -->
 							</div>
 							
 							<div class="b-right-top">
-								<span class="top-lable">收费站：100</span>
-								<span class="top-lable">收费站：100</span>
+								<span class="top-lable">{{formData.energyBean.personInChargeGas}}：{{formData.energyBean.telephoneGas}}</span>
 							</div>
 							<div class="b-right-top">
-								<span class="top-lable">收费站：100</span>
-								<span class="top-lable">收费站：100</span>
+								<span class="top-lable">柴油标号： {{formData.energyBean.dieselNo}}</span>
+								<span class="top-lable">汽油标号：{{formData.energyBean.petrolNo}}</span>
+							</div>
+							<div class="b-right-top">
+								<span class="top-lable">汽油加油枪机数量：{{formData.energyBean.petrolGunNum}}个</span>
+								<span class="top-lable">柴油加油枪数量：{{formData.energyBean.dieselGunNum}}个</span>
 							</div>
 							
 							<div class="right-tab">
-								<div class="item">停车位</div>
-								<div class="item">停车位</div>
-								<div class="item">停车位</div>
+								<div class="item">支付宝</div>
+								<div class="item">微信</div>
+								<div class="item">刷卡</div>
 							</div>
 						</div>
 					</div>
 					
 				</div>
-				<div class="item-box">
+				<div class="item-box" v-if="formData.energyBean.isAirStation==1">
 					<div class="service-public-title">加气站</div>
-					
+					<div class="service-more-item">
+						<div class="img"></div>
+						<div class="box-right">
+							<div class="b-right-top">
+								<div class="tit">{{formData.energyBean.gasStationRunBusiness}}</div>
+								<!-- <div class="top-phone">
+									建成运营
+								</div> -->
+							</div>
+							
+							<div class="b-right-top">
+								<span class="top-lable">{{formData.energyBean.personInChargeGas}}： {{formData.energyBean.telephoneGas}}</span>
+							</div>
+							
+							<div class="right-tab">
+								<div class="item">支付宝</div>
+								<div class="item">微信</div>
+								<div class="item">刷卡</div>
+							</div>
+						</div>
+					</div>
 				</div>
-			</div>
 			
-			<div class="service-num-box">
-				<div class="item-box">
-					<div class="service-public-title">充电站</div>
-					
-					
-					
-				</div>
-				<div class="item-box">
+				<div class="item-box" v-if="formData.garageBean.isGarage==1">
 					<div class="service-public-title">汽修</div>
 					<div class="service-more-item">
 						<div class="img"></div>
 						<div class="box-right">
 							<div class="b-right-top">
-								<div class="tit">大观服务区大观服务区大观服务区大观服务区(茂名方向)</div>
-								<div class="top-phone">
-									建成运营
-								</div>
+								<div class="tit">{{formData.garageBean.garageRunBusiness}}</div>
 							</div>
 							
 							<div class="b-right-top">
-								<span class="top-lable">收费站：100</span>
-								<span class="top-lable">收费站：100</span>
+								<span class="top-lable">{{formData.garageBean.garageBusinessScope}}</span>
 							</div>
 							<div class="b-right-top">
-								<span class="top-lable">收费站：100</span>
-								<span class="top-lable">收费站：100</span>
+								<span class="top-lable">联系电话：{{formData.garageBean.telephoneGarage}}</span>
+							</div>
+							<div class="b-right-top">
+								<span class="top-lable">维修车间：{{formData.garageBean.garageRoomNum}}个</span>
+								<span class="top-lable">维修工人：{{formData.garageBean.garageWorkerNum}}个</span>
 							</div>
 							
 							<div class="right-tab">
-								<div class="item">停车位</div>
-								<div class="item">停车位</div>
-								<div class="item">停车位</div>
+								<div class="item">汽车修理</div>
+								<div class="item">加气</div>
+								<div class="item">补胎</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 			
-			<div class="service-num-box">
-				<div class="item-box">
+				<div class="item-box" v-if="formData.roomBean.isAccommodation==1">
 					<div class="service-public-title">客房</div>
 					
 					<div class="service-more-item">
 						<div class="img"></div>
 						<div class="box-right">
 							<div class="b-right-top">
-								<div class="tit">大观服务区大观服务区大观服务区大观服务区(茂名方向)</div>
-								<div class="top-phone">
+								<div class="tit">{{formData.roomBean.name}}</div>
+								<!-- <div class="top-phone">
 									建成运营
-								</div>
-							</div>
-							
-							<div class="b-right-top">
-								<span class="top-lable">收费站：100</span>
-								<span class="top-lable">收费站：100</span>
-							</div>
-							<div class="b-right-top">
-								<span class="top-lable">收费站：100</span>
-								<span class="top-lable">收费站：100</span>
+								</div> -->
 							</div>
 							
 							<div class="right-tab">
-								<div class="item">停车位</div>
-								<div class="item">停车位</div>
-								<div class="item">停车位</div>
+								<div class="item">支付宝</div>
+								<div class="item">微信</div>
 							</div>
 						</div>
 					</div>
 					
 				</div>
-				<div class="item-box">
+				<div class="item-box" v-if="formData.babyBean.isMotherBaby==1">>
 					<div class="service-public-title">母婴室</div>
 					
+					<div class="service-more-item">
+						<div class="img"></div>
+						<div class="box-right">
+						
+							<div class="b-right-top">
+								<span class="top-lable">是否设有母婴室：{{formData.babyBean.isMotherBabyRest==1?'是':'否'}}</span>
+								<span class="top-lable">是否设有卫生间：{{formData.babyBean.isMotherBabyToilet==1?'是':'否'}}</span>
+							</div>
+							<div class="b-right-top">
+								<span class="top-lable">母婴室数：{{formData.babyBean.motherBabyNum}}间</span>
+								<span class="top-lable">母婴室面积：{{formData.babyBean.motherBabyArea}}平方米</span>
+							</div>
+						</div>
+					</div>
+					
 				</div>
-			</div>
 			
-			<div class="service-num-box">
-				<div class="item-box">
+				<div class="item-box" v-if="formData.waterBean.isAddWater==1">
 					<div class="service-public-title">加水</div>
 					
-					
+					<div class="service-more-item">
+						<div class="img"></div>
+						<div class="box-right">
+							<div class="b-right-top">
+								<div class="tit">{{formData.waterBean.operateWater}}</div>
+								<!-- <div class="top-phone">
+									建成运营
+								</div> -->
+							</div>
+							
+							<div class="b-right-top">
+								<span class="top-lable">{{formData.waterBean.personInChargeWater}}：{{formData.waterBean.telephoneWater}}</span>
+							</div>
+							<div class="b-right-top">
+								<span class="top-lable">加水枪数：{{formData.waterBean.waterGunNum}}个</span>
+							</div>
+							
+						</div>
+					</div>
 					
 				</div>
-				<div class="item-box">
+				<div class="item-box" v-if="formData.showerBean.isShower==1">
 					<div class="service-public-title">淋浴</div>
 					<div class="service-more-item">
 						<div class="img"></div>
 						<div class="box-right">
 							<div class="b-right-top">
-								<div class="tit">大观服务区大观服务区大观服务区大观服务区(茂名方向)</div>
-								<div class="top-phone">
+								<div class="tit">{{formData.showerBean.name}}</div>
+							<!-- 	<div class="top-phone">
 									建成运营
-								</div>
+								</div> -->
 							</div>
 							
 							<div class="b-right-top">
-								<span class="top-lable">收费站：100</span>
-								<span class="top-lable">收费站：100</span>
+								<span class="top-lable">淋浴总数：{{formData.showerBean.showerNum}}间</span>
 							</div>
 							<div class="b-right-top">
-								<span class="top-lable">收费站：100</span>
-								<span class="top-lable">收费站：100</span>
-							</div>
-							
-							<div class="right-tab">
-								<div class="item">停车位</div>
-								<div class="item">停车位</div>
-								<div class="item">停车位</div>
+								<span class="top-lable">男淋浴数：{{formData.showerBean.manShowerNum}}间</span>
+								<span class="top-lable">女淋浴数：{{formData.showerBean.womanShowerNum}}间</span>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 			
-			<div class="service-num-box">
-				<div class="item-box">
+				<div class="item-box" v-if="formData.basicBean.isTruckHome==1">
 					<div class="service-public-title">司机之家</div>
 					<div class="service-more-item">
 						<div class="img"></div>
 						<div class="box-right">
 							<div class="b-right-top">
-								<div class="tit">大观服务区大观服务区大观服务区大观服务区(茂名方向)</div>
-								<div class="top-phone">
+								<div class="tit">{{formData.driverHouseBean.name}}</div>
+								<!-- <div class="top-phone">
 									建成运营
-								</div>
+								</div> -->
 							</div>
 							
+							<!-- <div class="b-right-top">
+								<span class="top-lable">张涛：13548911494</span>
+							</div> -->
+							
 							<div class="b-right-top">
-								<span class="top-lable">收费站：100</span>
-								<span class="top-lable">收费站：100</span>
+								<span class="top-lable">面积：{{formData.driverHouseBean.homeArea}}平方米</span>
+								<span class="top-lable">同时容纳人数：{{formData.driverHouseBean.totalNum}}人</span>
 							</div>
-							<div class="b-right-top">
-								<span class="top-lable">收费站：100</span>
-								<span class="top-lable">收费站：100</span>
-							</div>
+							
 							
 							<div class="right-tab">
-								<div class="item">停车位</div>
-								<div class="item">停车位</div>
-								<div class="item">停车位</div>
+								<div class="item">客房</div>
+								<div class="item">电视</div>
+								<div class="item">空调</div>
 							</div>
 						</div>
 					</div>
@@ -361,6 +402,7 @@
 <script setup>
 import { ref, onMounted, defineProps, defineEmits,defineExpose,reactive } from 'vue'
 import { getServiceInfo,getRoadLineList } from "@/api/bigScreen/management.js";
+import { getImageForId } from "@/api/dictionaryApi.js";
 import Swiper from "swiper"
 import { Pagination,Navigation } from "swiper/modules" // 导入分页模块
 import { Autoplay } from "swiper/modules" // 导入自动滚动模块
@@ -381,8 +423,44 @@ const formData = ref({});
 
 const isShowSearch=ref(false)
 
-const highSpeedName=ref('')
 
+const mySwiperFn = () => {
+  // 初始化 Swiper 实例
+  new Swiper(".swiper-container", {
+    loop: true, // 无缝 ，是否循环展示
+    // 自动播放
+    autoplay: {
+      delay: 2000, // 每个图片移动完成后间隔
+      disableOnInteraction: false, // 触摸后是否停止自动移动
+      pauseOnMouseEnter: true //鼠标进入，停止滚动
+    },
+ 
+    resistanceRatio: 0,
+    slidesPerView: 3, // 一组三个，设置slider容器能够同时显示的slides数量 > 1
+    spaceBetween: 14, // 调整项目之间的间距，根据需要调整
+    centeredSlides: true,
+    // 窗口变化,重新init,针对F11全屏和放大缩小,必须加
+    observer: true, //修改swiper自己或子元素时，自动初始化swiper
+    observeParents: true, //修改swiper的父元素时，自动初始化swiper
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+      dynamicBullets: true,
+      dynamicMainBullets: 1 //动态分页器的主指示点的数量
+    },
+	
+	navigation: {
+	  nextEl: '.swiper-button-next',
+	  prevEl: '.swiper-button-prev',
+	},
+	
+    // 使用的模块
+    modules: [Pagination,Navigation]
+  })
+}
+
+
+const highSpeedName=ref('')
 
 //路线
 const getLineDataList=async (data)=>{
@@ -515,6 +593,14 @@ const carCount=(data)=>{
 	});
 }
 
+//获取图片
+const getImage=(id)=>{
+	return (
+	  process.env.VUE_APP_API_HOST_URL +
+	  process.env.VUE_APP_API_BASE_URL +
+	  `/pub/common/file/download?service=basServiceStationFileServiceImpl&id=${id}`
+	);
+}
 
 const open=()=>{
 	
@@ -528,6 +614,10 @@ const open=()=>{
 		carCount(res.data);
 		
 		isShowSearch.value=true;
+		
+		setTimeout(()=>{
+			mySwiperFn()
+		},500)
 	})
 	
 }
@@ -537,45 +627,8 @@ const close=()=>{
 	isShowSearch.value=false;
 }
 
-const mySwiperFn = () => {
-  // 初始化 Swiper 实例
-  new Swiper(".swiper-container", {
-    loop: true, // 无缝 ，是否循环展示
-    // 自动播放
-    autoplay: {
-      delay: 2000, // 每个图片移动完成后间隔
-      disableOnInteraction: false, // 触摸后是否停止自动移动
-      pauseOnMouseEnter: true //鼠标进入，停止滚动
-    },
- 
-    resistanceRatio: 0,
-    slidesPerView: 3, // 一组三个，设置slider容器能够同时显示的slides数量 > 1
-    spaceBetween: 14, // 调整项目之间的间距，根据需要调整
-    centeredSlides: true,
-    // 窗口变化,重新init,针对F11全屏和放大缩小,必须加
-    observer: true, //修改swiper自己或子元素时，自动初始化swiper
-    observeParents: true, //修改swiper的父元素时，自动初始化swiper
-    pagination: {
-      el: ".swiper-pagination",
-      clickable: true,
-      dynamicBullets: true,
-      dynamicMainBullets: 1 //动态分页器的主指示点的数量
-    },
-	
-	navigation: {
-	  nextEl: '.swiper-button-next',
-	  prevEl: '.swiper-button-prev',
-	},
-	
-    // 使用的模块
-    modules: [Pagination,Navigation]
-  })
-}
- 
-onMounted(() => {
-  mySwiperFn()
-})
 
+ 
 defineExpose({
   open,
   close,
@@ -728,6 +781,10 @@ defineExpose({
 					justify-content: space-between;
 					padding: 0 25px;
 					margin-top: 24px;
+					
+					&.list{
+						flex-wrap: wrap;
+					}
 					
 					.item-box{
 						width: 580px;

@@ -5,7 +5,7 @@
  * @Date: 2025-05-29 11:23:19
 <<<<<<< HEAD
  * @LastEditors: ysl
- * @LastEditTime: 2025-06-05 16:00:08
+ * @LastEditTime: 2025-06-06 15:56:21
 =======
  * @LastEditors: lkr
 <<<<<<< HEAD
@@ -130,5 +130,11 @@ export function getScreenInquireStat(data) {
 //智慧服务-新能源车排名
 export function getTotalNewEnergy(data) {
     const url = "/bigScreen/smartSaScreen/getTotalNewEnergy";
+    return doPost(url, data);
+}
+
+// 字典查询参数
+export function queryNormalOptions(data) {
+    const url = "/pub/common/queryNormalOptions";
     return doPost(url, data);
 }

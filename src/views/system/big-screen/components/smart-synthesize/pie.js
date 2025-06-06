@@ -1,4 +1,3 @@
-import * as echarts from "echarts";
 const getRowBarOption = (data,config) => {
 
   let options = {
@@ -15,7 +14,7 @@ const getRowBarOption = (data,config) => {
         {
           name: 'Access From',
           type: 'pie',
-          radius: ['40%', '70%'],
+          radius: ['40%', '60%'],
           avoidLabelOverlap: false,
           label: {
             show: false,
@@ -28,7 +27,7 @@ const getRowBarOption = (data,config) => {
               fontWeight: 'bold'
             }
           },
-		 
+
           labelLine: {
             show: false
           },

@@ -3,8 +3,8 @@
  * @version: 
  * @Author: ysl
  * @Date: 2025-02-24 11:05:22
- * @LastEditors: ysl
- * @LastEditTime: 2025-04-18 15:39:20
+ * @LastEditors: lkr
+ * @LastEditTime: 2025-06-05 13:53:01
 -->
 <template>
     <div class="section-flow-report">
@@ -319,12 +319,12 @@ function handleExcel() {
     });
 }
 // 分页分页大小改变触发
-function handleSizeChange() {
+function handleSizeChange(val) {
     pageSize.value = val;
     getTableList();
 }
 // 前后页变动时候触发
-function handleCurrentChange() {
+function handleCurrentChange(val) {
     page.value = val;
     getTableList();
 }

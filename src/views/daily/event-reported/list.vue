@@ -31,7 +31,7 @@
                     <el-form-item label="事件类型" class="form_item">
                         <el-cascader collapse-tags collapse-tags-tooltip  v-model="formData.eventTypeList" filterable
                         :reserve-keyword="false" placeholder="请选择事件类型" :options="eventReportedTypeDictionary" clearable
-                        :props = "{ multiple: true }"">
+                        :props = "{ multiple: true }">
                         </el-cascader>
                     </el-form-item>
                 </el-col>
@@ -140,6 +140,9 @@ import {isAuth} from "@/utils/authorization";
 import { downFilePOST } from "@/api/manage";
 import moment from 'moment'
 
+import { bigScreen } from "@/store/bigScreen";
+const store = bigScreen();
+
 const useInfo = JSON.parse(sessionStorage.getItem("userInfo"));
 
 /* 筛选表单数据start */
@@ -183,6 +186,7 @@ async function getData() {
         createEndTime:formData.createTime?formData.createTime[1]:null,
         handleBeginTime:formData.handleTime?formData.handleTime[0]:null,
         handleEndTime:formData.handleTime?formData.handleTime[1]:null,
+		largeScreen:store.chargeReportData.largeScreen?true:false
     });
     if (res.code == 200) {
         tableData.value = res.data.records;

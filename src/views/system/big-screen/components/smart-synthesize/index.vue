@@ -19,13 +19,14 @@
                   <defs>
                     <!-- 渐变色ID需唯一 -->
                     <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stop-color="#B8F88C" />  <!-- 起点颜色 -->
-                      <stop offset="100%" stop-color="#21A9BF" /> <!-- 终点颜色 -->
+                      <stop offset="0%" stop-color="#B8F88C"/>  <!-- 起点颜色 -->
+                      <stop offset="100%" stop-color="#21A9BF"/> <!-- 终点颜色 -->
                     </linearGradient>
                   </defs>
                 </svg>
-                <el-progress type="circle" class="gradient-progress" :percentage="serveceInfo?.toiletRate" stroke-width="5" width="50"
-                             color="#1DA7C0" />
+                <el-progress type="circle" class="gradient-progress" :percentage="serveceInfo?.toiletRate"
+                             stroke-width="5" width="50"
+                             color="#1DA7C0"/>
                 <div class="txt-box">
                   <div class="txt">卫生间</div>
                   <div class="num">{{ serveceInfo?.toiletNum }}</div>
@@ -159,8 +160,8 @@
             <img src="../../images/manage/i1.png" class="icon"/>
             <div class="center-header-item-bottom">
               <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{ centerHeaderData.dangerCount }}</span>
-                <span class="center-header-item-bottom-time-unit">%</span>
+                <span class="center-header-item-bottom-time-num screen-text-shadow" >{{ centerHeaderData.operationTotal }}</span>
+                <span class="center-header-item-bottom-time-unit"></span>
               </div>
               <div class="center-header-item-bottom-label">服务区数(侧)</div>
             </div>
@@ -170,7 +171,7 @@
             <img src="../../images/smartService/car.png" class="icon"/>
             <div class="center-header-item-bottom">
               <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{ centerHeaderData.serviceCount }}</span>
+                <span class="center-header-item-bottom-time-num screen-text-shadow">{{ centerHeaderData.carTraffic }}</span>
               </div>
               <div class="center-header-item-bottom-label">车流量</div>
             </div>
@@ -180,7 +181,7 @@
             <img src="../../images/manage/i3.png" class="icon"/>
             <div class="center-header-item-bottom">
               <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{ centerHeaderData.suddenCount }}</span>
+                <span class="center-header-item-bottom-time-num screen-text-shadow">{{ centerHeaderData.freightTraffic }}</span>
               </div>
               <div class="center-header-item-bottom-label">货车</div>
             </div>
@@ -190,14 +191,14 @@
             <img src="../../images/manage/i4.png" class="icon"/>
             <div class="center-header-item-bottom">
               <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{ centerHeaderData.suddenCount }}</span>
+                <span class="center-header-item-bottom-time-num screen-text-shadow">{{ centerHeaderData.newEnergyTraffic }}</span>
               </div>
               <div class="center-header-item-bottom-label">新能源车</div>
             </div>
           </div>
 
           <!-- 驶入率 -->
-          <div class="center-header-item">
+     <!--     <div class="center-header-item">
             <img src="../../images/smartService/pie.png" class="icon"/>
             <div class="center-header-item-bottom">
               <div class="center-header-item-bottom-time">
@@ -206,13 +207,13 @@
               </div>
               <div class="center-header-item-bottom-label">驶入率</div>
             </div>
-          </div>
+          </div> -->
           <!-- 饱和度 -->
           <div class="center-header-item">
             <img src="../../images/smartService/pie.png" class="icon"/>
             <div class="center-header-item-bottom">
               <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{ centerHeaderData.serviceCount }}</span>
+                <span class="center-header-item-bottom-time-num screen-text-shadow">{{ centerHeaderData.carSaturation }}</span>
                 <span class="center-header-item-bottom-time-unit">%</span>
               </div>
               <div class="center-header-item-bottom-label">饱和度</div>
@@ -223,7 +224,7 @@
             <img src="../../images/smartService/people.png" class="icon"/>
             <div class="center-header-item-bottom">
               <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{ centerHeaderData.suddenCount }}</span>
+                <span class="center-header-item-bottom-time-num screen-text-shadow">{{ centerHeaderData.guestTraffic }}</span>
               </div>
               <div class="center-header-item-bottom-label">客流量</div>
             </div>
@@ -233,7 +234,7 @@
             <img src="../../images/manage/i8.png" class="icon"/>
             <div class="center-header-item-bottom">
               <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{ centerHeaderData.suddenCount }}</span>
+                <span class="center-header-item-bottom-time-num screen-text-shadow">{{ centerHeaderData.equipmentNum }}</span>
               </div>
               <div class="center-header-item-bottom-label">充电站</div>
             </div>
@@ -244,7 +245,7 @@
             <img src="../../images/manage/i9.png" class="icon"/>
             <div class="center-header-item-bottom">
               <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{ centerHeaderData.suddenCount }}</span>
+                <span class="center-header-item-bottom-time-num screen-text-shadow">{{ centerHeaderData.connectorNum }}</span>
               </div>
               <div class="center-header-item-bottom-label">充电枪</div>
             </div>
@@ -254,7 +255,7 @@
             <img src="../../images/smartService/light.png" class="icon"/>
             <div class="center-header-item-bottom">
               <div class="center-header-item-bottom-time">
-                <span class="center-header-item-bottom-time-num">{{ centerHeaderData.serviceCount }}</span>
+                <span class="center-header-item-bottom-time-num screen-text-shadow">{{ centerHeaderData.connectorOccupancyRate }}</span>
                 <span class="center-header-item-bottom-time-unit">%</span>
               </div>
               <div class="center-header-item-bottom-label">充电枪占用率</div>
@@ -268,12 +269,12 @@
           </div>
 
           <div class="search-input-box">
-            <input type="text" class="input" placeholder="服务区搜索"/>
-            <div class="box-btn"></div>
+            <input type="text" class="input" v-model="serviceParams.serviceAreaName" placeholder="服务区搜索"/>
+            <div class="box-btn" @click="getServiceListData"></div>
           </div>
         </div>
         <div class="center-bottom">
-          <Map/>
+          <Map ref="mapRef" @markerClick="markerClick"/>
         </div>
 
 
@@ -285,12 +286,19 @@
       <div class="smart-energy-right">
         <div class="smart-energy-right-item">
           <div class="item-top">充电繁忙度排名</div>
-          <TimeTypeSelector v-model="carUse.selectTimeType" @select="handleSelectCarUseRanking"/>
+          <TimeTypeSelector v-model="carUse.selectTimeType" @select="(event)=>handleSelectDangerCarRanking(event,'3')"/>
           <div class="item-bottom">
             <div class="item-table">
               <!-- 表头 -->
-              <table class="item-table-content table-header">
+              <table class="item-table-content table-header"
+                     :style="{width:carUseData?.length>5 ? `calc(100% - 20px)`:'100%'}">
+                <colgroup>
+                  <col style="width:120px"/>
+                  <col style="width:auto"/>
+                  <col style="width:80px"/>
+                </colgroup>
                 <thead>
+
                 <tr>
                   <th v-for="(col, index) in carUseColumns" :key="index">{{ col.label }}</th>
                 </tr>
@@ -298,14 +306,25 @@
               </table>
 
               <!-- 表体-->
-              <div class="table-body">
+              <div class="table-body screens-scroll-box" style="height: 176px;overflow-y: auto">
                 <table class="item-table-content">
+                  <colgroup>
+                    <col style="width:120px"/>
+                    <col style="width:auto"/>
+                    <col style="width:80px"/>
+                  </colgroup>
                   <tbody ref="scrollContent">
-                  <tr class="" v-for="(item, index) in carUseData">
+
+                  <tr class="" v-if="carUseData?.length>0" v-for="(item, index) in carUseData" :key="item.serviceId">
                     <td v-for="(col, i) in carUseColumns" :key="i">
                       <div class="io" :class="'b'+index" v-if="i==0">TOP{{ index + 1 }}</div>
                       <span v-else>{{ item[col.prop] }}</span>
                     </td>
+                  </tr>
+                  <tr v-else style="width: 100%;text-align: center">
+                    <td></td>
+                    <td>暂无数据</td>
+                    <td></td>
                   </tr>
                   </tbody>
                 </table>
@@ -318,32 +337,40 @@
         <!-- 经营信息 -->
         <div class="smart-energy-left-item">
           <div class="item-top">经营信息</div>
-          <TimeTypeSelector v-model="dangerCar.selectTimeType"
-                            @select="handleSelectDangerCarRanking"/>
+          <TimeTypeSelector v-model="operate.selectTimeType"
+                            @select="(event)=>handleSelectDangerCarRanking(event,'4')"/>
           <div class="item-bottom" style="position: relative;">
             <div class="income-txt">
               <div class="tit">总收入</div>
-              <div class="num">1315.97</div>
+              <div class="num">{{ serviceData?.incomeTotal || 0 }}</div>
               <div class="num-txt">万元</div>
             </div>
-            <div ref="incomeInfoRef" style="width: 450px; height: 200px"></div>
-
+            <div ref="incomeInfoRef" style="width: 450px; height: 200px;z-index: 999"></div>
+            <img src="../../images/manage/chart-buttom.png" style="position: absolute;bottom: 30px;left: 50%;margin-left: -115px;z-index: 998"   alt="">
             <div class="income-tps-box">
               <div class="tit">油品收入</div>
               <div class="num">
-                <div class="num-n">2172</div>
+                <div class="num-n">{{ serviceData?.oilIncome || 0 }}</div>
                 <div class="num-d">万元</div>
               </div>
               <div class="hr"></div>
+              <div class="num">
+                <div class="num-n">{{ serviceData?.oilIncomeRate || 0 }}</div>
+                <div class="num-d">%</div>
+              </div>
             </div>
 
             <div class="income-tps-box box-r">
               <div class="tit">非油品收费</div>
               <div class="num">
-                <div class="num-n">2172</div>
+                <div class="num-n">{{ serviceData?.nonOilIncome || 0 }}</div>
                 <div class="num-d">万元</div>
               </div>
               <div class="hr"></div>
+              <div class="num">
+                <div class="num-n">{{ serviceData?.nonOilIncomeRate || 0 }}</div>
+                <div class="num-d">%</div>
+              </div>
             </div>
           </div>
         </div>
@@ -351,10 +378,15 @@
         <!-- 经营收入排名 -->
         <div class="smart-energy-left-item">
           <div class="item-top">经营收入排名</div>
-          <TimeTypeSelector v-model="dangerCar.selectTimeType"
-                            @select="handleSelectDangerCarRanking"/>
+          <TimeTypeSelector v-model="sy.selectTimeType"
+                            @select="(event)=>handleSelectDangerCarRanking(event,'5')"/>
           <div class="item-bottom">
-            <div ref="incomeRef" style="width: 450px; height: 260px"></div>
+            <div ref="incomeRef" v-show="syData?.length >0" style="width: 450px; height: 230px"></div>
+            <el-empty v-show="syData?.length ===0" description="No Data" style="width: 450px; height: 230px" >
+              <template #image>
+                暂无数据
+              </template>
+            </el-empty>
           </div>
         </div>
 
@@ -367,7 +399,7 @@
       <!-- 服务器筛选 end -->
 
       <!-- 服务区详情 -->
-      <searchAreaAlert></searchAreaAlert>
+      <searchAreaAlert ref="serviceInfoRef" :id="serviceId"></searchAreaAlert>
 
     </div>
   </keep-alive>
@@ -381,8 +413,18 @@ import {getRowBarOption} from './pie'
 import {getPie3D} from './pie3d'
 import {getRowXBarOption} from '../../service_xbar'
 import searchAlert from '../service-search-alert/index';
+import searchAreaAlert from '../service-area-alert/index';
 import Map from '@/components/map/index.vue';
-import {getServiceCar, getServiceEquipment, getServicePerson} from "@/api/bigScreen/service-devices";
+import {
+  chargePileList,
+  getIncomeList,
+  getIntegratedTotal,
+  getServiceCar,
+  getServiceEquipment,
+  getServiceManage,
+  getServicePerson
+} from "@/api/bigScreen/service-devices";
+import {getRoadLineList, getServiceAreaList} from "@/api/bigScreen/management.js";
 import {dayjs} from "element-plus";
 import {bigScreen} from "@/store/bigScreen";
 
@@ -398,10 +440,35 @@ const components = {
 
 //顶部数据
 const centerHeaderData = reactive({
-  dangerCount: 0, //危化品车辆
-  serviceCount: 0, //司机之家服务人次
-  suddenCount: 0, //突发事件
+  carSaturation:0, //饱和度=总车流量/总车位数*100%
+  carTraffic:0,  //车流量
+  connectorNum:0, //充电枪
+  connectorOccupancyRate:0,  //充电枪占用率=获取充电管理中状态为占用充电中的枪数/总充电枪数*100%
+  equipmentNum:0,  //充电桩
+  freightTraffic:0,  //货车流量
+  guestTraffic:0,  //客流量
+  newEnergyTraffic:0,  //新能源车流量
+  operationTotal: 0, //服务区星级
 });
+
+
+const getHeaderData=async ()=>{
+	let res = await getIntegratedTotal();
+
+	let data=res.data;
+
+	centerHeaderData.carSaturation=data.carSaturation?data.carSaturation:0;
+	centerHeaderData.carTraffic=data.carTraffic;
+	centerHeaderData.connectorNum=data.connectorNum;
+	centerHeaderData.connectorOccupancyRate=data.connectorOccupancyRate;
+	centerHeaderData.equipmentNum=data.equipmentNum;
+	centerHeaderData.freightTraffic=data.freightTraffic;
+	centerHeaderData.guestTraffic=data.guestTraffic;
+	centerHeaderData.newEnergyTraffic=data.newEnergyTraffic;
+	centerHeaderData.operationTotal=data.operationTotal;
+
+}
+getHeaderData();
 
 /* 危化品车辆排名: DangerCarRanking */
 const dangerCar = reactive({
@@ -410,6 +477,15 @@ const dangerCar = reactive({
 });
 
 const people = reactive({
+  selectTimeType: "0",
+  dateRange: [],
+});
+
+const operate = reactive({
+  selectTimeType: "0",
+  dateRange: [],
+});
+const sy = reactive({
   selectTimeType: "0",
   dateRange: [],
 });
@@ -448,7 +524,7 @@ function handleSelectDangerCarRanking(payload, type) {
     time: null,
     startDate: null,
     endDate: null,
-    type:null,
+    type: null,
   }
   // 昨日
   if (payload.code === '0') {
@@ -505,9 +581,14 @@ function handleSelectDangerCarRanking(payload, type) {
 
   if (type === '1') {
     getCarData(params)
-
   } else if (type === '2') {
     getPeopleData(params)
+  } else if (type === '3') {
+    getChargePileList(params)
+  } else if (type === '4') {
+    getServiceManageData(params)
+  } else if (type === '5') {
+    getIncomeListData(params)
   }
 
   // chargingRankingEcharts(payload);
@@ -571,47 +652,42 @@ function handleSelectCarUseRanking(payload) {
 const carUseData = ref([]);
 const carUseColumns = [
   {label: "排名", prop: "serviceAreaName"},
-  {label: "服务区名称", prop: "exPassengerNumber"},
-  {label: "繁忙度", prop: "exTruckNumber"},
+  {label: "服务区名称", prop: "serviceAreaName"},
+  {label: "繁忙度", prop: "totalChargeHoursRate"},
 ];
 
 let arr = [];
-for (let i = 0; i < 5; i++) {
-  arr.push({
-    serviceAreaName: 'TOP' + i,
-    exPassengerNumber: 'xxx服务区',
-    exTruckNumber: '7.25'
-  })
-}
-carUseData.value = arr;
+// for (let i = 0; i < 5; i++) {
+//   arr.push({
+//     serviceAreaName: 'TOP' + i,
+//     exPassengerNumber: 'xxx服务区',
+//     exTruckNumber: '7.25'
+//   })
+// }
+// carUseData.value = arr;
 
 //经营信息
 let incomeInfoChart = null
 let incomeInfoRef = ref('');
 const incomeInfoEcharts = () => {
-  let chartData = {
-    data: [100, 200, 1, 150, 180],
-    yData: [],
-    xData: ['xxx服务区', 'xxx服务区', 'xxx服务区', 'xxx服务区', 'xxx服务区'],
-  }
   nextTick(() => {
     if (!incomeInfoChart) {
       incomeInfoChart = echarts.init(incomeInfoRef.value);
       let option = getPie3D([{
-        name: '已消除',
-        value: 3,
+        name: '油品收入',
+        value: 0,
         itemStyle: {
           opacity: 0.5,
-          color: 'rgba(0, 138, 255, 0.8)',
+          color: 'rgba(0, 138, 255, 0.6)',
         }
       }
 
         , {
-          name: '未消除',
-          value: 1,
+          name: '非油品收费',
+          value: 0,
           itemStyle: {
             opacity: 0.5,
-            color: 'rgba(255, 138, 0, 0.8)',
+            color: 'rgba(255, 138, 0, 0.6)',
           }
         }
 
@@ -647,6 +723,49 @@ const incomeEcharts = () => {
 };
 incomeEcharts()
 
+//服务区查询
+let serviceInfoRef = ref('');
+let mapRef = ref('');
+const serviceId = ref(0);
+const serviceParams = reactive({
+  serviceAreaName: '', //服务区名称
+  highSpeed: '', //所在高速 逗号隔开
+  star: '', //星级 逗号隔开
+  status: '', //服务区状态 逗号隔开
+  specService: '', //是否特色服务区 1 是 0 否
+  truckHome: '', //是否司机之家 1 是 0 否
+  station: '', //是否同心驿站 1 是 0 否
+});
+const getServiceListData = () => {
+  getServiceAreaList(serviceParams).then(res => {
+    console.log(res.data.records)
+    mapRef.value.removeAllMarkers();
+
+    let mapArr = [];
+
+    res.data.records.forEach(item => {
+      let n = 0;
+      if (item.star == '三星级') {
+        n = 3;
+      }
+      if (item.star == '四星级') {
+        n = 4;
+      }
+      if (item.star == '五星级') {
+        n = 5;
+      }
+
+      mapArr.push({
+        ...item,
+        type: item.status,
+        starNum: n,
+        lng: item.lng,
+        lat: item.lat,
+      });
+    })
+    mapRef.value.setMarkers(mapArr)
+  })
+}
 
 //服务区筛选数据
 let searchRef = ref('');
@@ -662,66 +781,56 @@ areaArr.push({
   field: 'star',
   children: [
     {
-      id: 1,
-      title: '5级'
+      value: '三星级',
+      label: '3级'
     },
     {
-      id: 2,
-      title: '4级'
+      value: '四星级',
+      label: '4级'
     },
     {
-      id: 3,
-      title: '3级'
+      value: '五星级',
+      label: '5级'
     },
     {
-      id: 4,
-      title: '达标'
+      value: '达标,暂无星级',
+      label: '达标'
     }
   ]
 })
 
-areaArr.push({
-  title: '路线',
-  field: 'route',
-  children: [
-    {
-      id: 1,
-      title: 'G75兰海高速'
-    },
-    {
-      id: 2,
-      title: 'G75兰海高速级'
-    },
-    {
-      id: 3,
-      title: 'G75兰海高速级'
-    },
-    {
-      id: 4,
-      title: 'G75兰海高速'
-    }
-  ]
-})
+//路线
+const getLineDataList = async () => {
+  let res = await getRoadLineList()
+
+  areaArr.push({
+    title: '路线',
+    field: 'highSpeed',
+    children: res.data.records
+  })
+}
+getLineDataList();
+
 
 areaArr.push({
   title: '服务区状态',
   field: 'status',
   children: [
     {
-      id: 1,
-      title: '在建'
+      value: 3,
+      label: '在建'
     },
     {
-      id: 2,
-      title: '建成运营'
+      value: 1,
+      label: '建成运营'
     },
     {
-      id: 3,
-      title: '建成未运营'
+      value: 2,
+      label: '建成未运营'
     },
     {
-      id: 4,
-      title: '关闭'
+      value: 4,
+      label: '关闭'
     }
   ]
 })
@@ -731,16 +840,16 @@ areaArr.push({
   field: 'other',
   children: [
     {
-      id: 1,
-      title: '司机之家'
+      value: 1,
+      label: '司机之家'
     },
     {
-      id: 2,
-      title: '特色服务区'
+      value: 2,
+      label: '特色服务区'
     },
     {
-      id: 3,
-      title: '同心驿站'
+      value: 3,
+      label: '同心驿站'
     }
   ]
 })
@@ -748,7 +857,50 @@ searchAreaArr.value = areaArr;
 
 //搜索回调
 const chooseSearch = (res) => {
+
+  console.log(res.highSpeed)
+
+  if (res.highSpeed) {
+    serviceParams.highSpeed = res.highSpeed.join(',')
+  }
+  if (res.star) {
+    serviceParams.star = res.star.join(',')
+  }
+  if (res.status) {
+    serviceParams.status = res.status.join(',')
+  }
+
+  serviceParams.specService = ''
+  serviceParams.truckHome = ''
+  serviceParams.station = ''
+
+  if (res.other) {
+    res.other.forEach(item => {
+      if (item == 1) {
+        serviceParams.truckHome = 1
+      }
+      if (item == 2) {
+        serviceParams.specService = 1
+      }
+      if (item == 3) {
+        serviceParams.station = 1
+      }
+    })
+  }
+
+
+  getServiceListData();
+}
+
+//地图点击
+function markerClick(res) {
   console.log(res)
+  serviceId.value = res.serviceAreaId;
+
+
+  nextTick(() => {
+    serviceInfoRef.value.open()
+  })
 }
 
 const serveceInfo = ref()
@@ -762,6 +914,9 @@ function getData() {
 
   getCarData()
   getPeopleData()
+  getChargePileList()
+  getServiceManageData()
+  getIncomeListData()
 }
 
 function getCarData(params) {
@@ -815,18 +970,129 @@ function getPeopleData(params) {
 }
 
 
+function getChargePileList(params) {
+  let _params = {
+    selectTimeType: 0,
+    time: dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
+    startDate: dayjs().subtract(2, 'day').format('YYYY-MM-DD'),
+    endDate: dayjs().subtract(1, 'day').format('YYYY-MM-DD')
+  }
+  if (params) {
+    _params = params
+  }
+  chargePileList(_params).then(res => {
+    console.log(res, 'res')
+    carUseData.value = res.data.records
+  })
+}
+
+const serviceData = ref()
+
+function getServiceManageData(params) {
+  let _params = {
+    selectTimeType: 0,
+    time: dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
+    startDate: dayjs().subtract(2, 'day').format('YYYY-MM-DD'),
+    endDate: dayjs().subtract(1, 'day').format('YYYY-MM-DD')
+  }
+  if (params) {
+    _params = params
+  }
+  getServiceManage(_params).then(res => {
+    console.log(res, 'res')
+    serviceData.value = res.data.records[0]
+    let num1 = 0
+    let num2 = 0
+    if ((serviceData.value?.oilIncome) > (serviceData.value?.nonOilIncome)) {
+      num1 = serviceData.value?.oilIncome / serviceData.value?.nonOilIncome
+      if (num1 > 5) {
+        num1 = 5
+      }
+      num2 = 1
+    } else {
+      num1 = 1
+      num2 = serviceData.value?.nonOilIncome / serviceData.value?.oilIncome
+      if (num2 > 5) {
+        num2 = 5
+      }
+    }
+
+    let option = getPie3D([{
+      name: '油品收入',
+      value: num1 || 0,
+      rota: serviceData.value?.oilIncomeRate,
+      itemStyle: {
+        opacity: 0.5,
+        color: 'rgba(0, 138, 255, 0.6)',
+      }
+    }
+      , {
+        name: '非油品收费',
+        value: num2 || 0,
+        rota: serviceData.value?.nonOilIncomeRate,
+        itemStyle: {
+          opacity: 0.5,
+          color: 'rgba(255, 138, 0, 0.6)',
+        }
+      }
+
+    ], 2);
+    incomeInfoChart && incomeInfoChart.setOption(option);
+  })
+}
+
+
+const syData = ref()
+
+function getIncomeListData(params) {
+  let _params = {
+    selectTimeType: 0,
+    time: dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
+    startDate: dayjs().subtract(2, 'day').format('YYYY-MM-DD'),
+    endDate: dayjs().subtract(1, 'day').format('YYYY-MM-DD')
+  }
+  if (params) {
+    _params = params
+  }
+  getIncomeList(_params).then(res => {
+    console.log(res, 'res')
+    syData.value = res.data.records
+    let chartData = {
+      data: [],
+      yData: [],
+      xData: [],
+    }
+    res.data.records?.map(item => {
+      chartData.data.push(item?.incomeTotal || 0)
+      chartData.xData.push(item?.serviceAreaName || '-')
+    })
+
+    let option = getRowXBarOption(chartData, {
+      barColor: [
+        {offset: 0, color: "#0d488d"},
+        {offset: 0.5, color: "#38a7c7"},
+        {offset: 1, color: "#5DF7F8"},
+      ]
+    })
+    incomeChart && incomeChart.setOption(option);
+
+  })
+}
+
+
 function toUrl(tag) {
   // 车流量
   if (tag === '1') {
     const store = bigScreen();
-    console.log(carParams.value,'carParams.value')
-    store.setData({...carParams.value,selectTimeType:carParams.value.type});
+    console.log(carParams.value, 'carParams.value')
+    store.setData({...carParams.value, selectTimeType: carParams.value.type});
     proxy.$Bus.emit("jumpAgency", {
       url: "/daily/dailyIncome",
       // data: data,
     });
   }
 }
+
 // 动态计算渐变色（根据百分比）
 const gradientColor = computed(() => {
   return `url(#progress-gradient)`; // 绑定SVG渐变
@@ -836,12 +1102,17 @@ onMounted(() => {
 })
 
 </script>
+
 <style lang="less" scoped>
+
 
 .gradient-progress-container {
   position: relative;
 }
 
+::v-deep(.el-empty__description){
+  margin-top: 10px;
+}
 /* 覆盖Element默认样式 */
 :deep(.el-progress-circle__path) {
   stroke: v-bind(gradientColor); /* 动态绑定渐变色 */
@@ -867,6 +1138,7 @@ onMounted(() => {
   color: #fff;
   margin-top: -100px;
   padding: 0px 2px;
+  background: #10272A;
 }
 
 .smart-energy-left,
@@ -1057,7 +1329,7 @@ onMounted(() => {
         color: #50E0FF;
 
         span {
-          font-size: 14px
+          font-size: 12px
         }
       }
 
@@ -1228,7 +1500,8 @@ onMounted(() => {
 .item-table {
   justify-content: flex-start;
   width: 90%;
-  margin-left: 28px;
+  //margin-left: 28px;
+  width: 100%;
 
   .table-header {
     table-layout: fixed;
@@ -1236,7 +1509,7 @@ onMounted(() => {
 
   .item-table-content {
     width: 100%;
-    margin: 0 auto;
+    //margin: 0 auto;
     border-collapse: collapse;
     text-align: center;
     color: #d5e2f1;
@@ -1369,7 +1642,7 @@ onMounted(() => {
   overflow: hidden;
   margin-top: 10px;
   width: 100%;
-  height: 600px;
+  height: 580px;
 
 }
 
@@ -1448,6 +1721,7 @@ onMounted(() => {
   font-size: 12px;
   color: #fff;
   font-weight: normal;
+  margin-left: 10px;
 }
 
 .center-header-item-bottom-label {

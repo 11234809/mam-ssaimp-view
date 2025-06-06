@@ -12,7 +12,7 @@
 							<div class="txt">管理员巡检</div>
 							<div class="hr"></div>
 						</div>
-						<div class="box-item">
+						<div class="box-item" @click="clickCompleteEven" style="cursor: pointer;">
 							<img class="icon" src="../../images/manage/gl.png" alt="" />
 
 							<div class="item-ul">
@@ -35,7 +35,7 @@
 							<div class="txt">保安巡检</div>
 							<div class="hr"></div>
 						</div>
-						<div class="box-item">
+						<div class="box-item" @click="clickSecurityEven" style="cursor: pointer;">
 							<img class="icon" src="../../images/manage/ba.png" alt="" />
 
 							<div class="item-ul">
@@ -68,7 +68,14 @@
 				<div class="smart-energy-left-item">
 					<div class="item-top">危化品车辆分布</div>
 					<div class="item-bottom item-bottom-table scroll-wrapper">
-						<div ref="dangerCarNetRef" style="width:450px; height: 260px"></div>
+					
+						<div ref="dangerCarNetRef" style="width:450px; height: 260px">
+						<el-empty v-show="dangerCarNetListCount ===0" description="No Data" style="width: 450px; height: 220px" >
+						  <template #image>
+						    暂无数据
+						  </template>
+						</el-empty>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -146,9 +153,15 @@
 						    <table class="item-table-content">
 						      <tbody ref="scrollContent">
 						        <tr class="" v-for="(item, index) in carUseData" >
-						          <td v-for="(col, i) in carUseColumns" :key="i">
+						          <td v-for="(col, i) in carUseColumns" :key="i" @click="clickCarUseEven">
 									  <div class="io" :class="'b'+index" v-if="i==0">TOP{{ index+1 }}</div>
 									  <span v-else>{{ item[col.prop] }}</span>
+								  </td>
+						        </tr>
+								
+								<tr class="" v-if="carUseData.length==0">
+						          <td>
+									 暂无数据
 								  </td>
 						        </tr>
 						      </tbody>
@@ -178,7 +191,7 @@
 						    <table class="item-table-content">
 						      <tbody>
 						        <tr class="" v-for="(item, index) in eventInformationData" >
-						          <td v-for="(col, i) in eventInformationDataColumns" :key="i">
+						          <td @click="clickEventData" v-for="(col, i) in eventInformationDataColumns" :key="i">
 									  {{ item[col.prop] }}
 								  </td>
 						        </tr>
@@ -223,6 +236,9 @@ import {
   getDataTotal,
   getRoadLineList
 } from "@/api/bigScreen/management.js";
+import { bigScreen } from "@/store/bigScreen";
+import {dayjs} from "element-plus";
+const store = bigScreen();
 
 const {
 		proxy
@@ -275,6 +291,91 @@ const {
 	}
 	init();
 	
+	function getSelectParam(payload) {
+	  let params = {
+	    selectTimeType: '0',
+	    timeList: [],
+	    time: null,
+	    startDate: null,
+	    endDate: null,
+	    type: null,
+	  }
+	  // 昨日
+	  if (payload.code === '0') {
+	    params.selectTimeType = '0'
+	    params.type = '1'
+	    params.time = dayjs().subtract(1, 'day').format('YYYY-MM-DD');
+	
+	    params.startDate = dayjs().subtract(2, 'day').format('YYYY-MM-DD');
+	    params.endDate = params.time
+	  } else if (payload.code === '1') {
+	    params.selectTimeType = '0'
+	    params.type = '0'
+	    params.time = dayjs().format('YYYY-MM-DD');
+	
+	    params.startDate = dayjs().subtract(1, 'day').format('YYYY-MM-DD');
+	    params.endDate = params.time
+	  } else if (payload.code === '2') {
+	    const weekStart = dayjs().startOf('week').format('YYYY-MM-DD');
+	    const weekEnd = dayjs().endOf('week').format('YYYY-MM-DD');
+	    params.selectTimeType = '1'
+	    params.type = '2'
+	    params.timeList = [weekStart, weekEnd]
+	
+	    params.startDate = weekStart
+	    params.endDate = weekEnd
+	  } else if (payload.code === '3') { // 月
+	    params.selectTimeType = '2'
+	    params.type = '3'
+	    params.time = dayjs().format('YYYY-MM');
+	
+	    params.startDate = dayjs().startOf('month').format('YYYY-MM-DD');
+	    params.endDate = dayjs().endOf('month').format('YYYY-MM-DD');
+	  } else if (payload.code === '4') {//季度
+	    params.selectTimeType = '3'
+	    params.type = '4'
+	    let {start, end} = getCurrentQuarterRange()
+	    params.timeList = [start, end]
+	
+	    params.startDate = dayjs(start).startOf('month').format('YYYY-MM-DD');
+	    params.endDate = dayjs(end).endOf('month').format('YYYY-MM-DD');
+	  } else if (payload.code === '5') {
+	    params.selectTimeType = '4'
+	    params.type = '5'
+	    params.time = dayjs().format('YYYY');
+	
+	    params.startDate = dayjs().startOf('year').format('YYYY-MM-DD');
+	    params.endDate = dayjs().endOf('year').format('YYYY-MM-DD');
+	  } else if (payload.code === "6") {
+	    params.timeList = payload.dateRange || [];
+	    params.selectTimeType = '5'
+	    params.startDate = payload.dateRange[0];
+	    params.endDate = payload.dateRange[1];
+	  }
+	  
+	  return params;
+	
+	}
+	
+	// 巡检信息点击
+	const clickCompleteEven = () => {
+	  const data = { largeScreen:true};
+	  store.setData(data);
+	  proxy.$Bus.emit("jumpAgency", {
+	    url: "/daily/routineInspection/manager",
+	    data: data,
+	  });
+	};
+	const clickSecurityEven = () => {
+	 const data = { largeScreen:true};
+	 store.setData(data);
+	  proxy.$Bus.emit("jumpAgency", {
+	    url: "/daily/routineInspection/security",
+	    data: data,
+	  });
+	  
+	};
+	
 	//服务区查询
 	let serviceInfoRef = ref('');
 	let mapRef = ref('');
@@ -296,7 +397,7 @@ const {
 			let mapArr=[];
 			
 			res.data.records.forEach(item=>{
-				let n=2;
+				let n=0;
 				if(item.star=='三星级'){
 					n=3;
 				}
@@ -333,24 +434,26 @@ const {
 
 	/* 危化品车辆排名: DangerCarRanking */
 	const dangerCar = reactive({
-	  selectTimeType: "0",
+	  selectTimeType: '0',
+	  timeList: [],
+	  time: null,
+	  startDate: null,
+	  endDate: null,
+	  type: null,
 	  queryStart: '',
 	  queryEnd: '',
 	});
 	function handleSelectDangerCarRanking(payload) {
-	  dangerCar.selectTimeType = payload.code;
-	  if (payload.code === "6") {
-	    let timeRunge = payload.dateRange || [];
-		if(timeRunge[0]){
-			dangerCar.queryStart=timeRunge[0];
-		}
-		if(timeRunge[1]){
-			dangerCar.queryEnd=timeRunge[1];
-		}
-	  }else{
-		  dangerCar.queryStart=''
-		  dangerCar.queryEnd=''
-	  }
+	  let param=getSelectParam(payload);
+	  dangerCar.selectTimeType=param.selectTimeType;
+	  dangerCar.timeList=param.timeList;
+	  dangerCar.time=param.time;
+	  dangerCar.startDate=param.startDate;
+	  dangerCar.endDate=param.endDate;
+	  dangerCar.type=param.type;
+	  dangerCar.queryStart=param.startDate;
+	  dangerCar.queryEnd=param.endDate;
+	  
 	  dangerCarEcharts();
 	}
 
@@ -371,6 +474,16 @@ const {
 		  chartData.yData.push(item.itemName);
 	  })
 	  
+	  // const clickCompleteEven = () => {
+	  //   // const data = { ...centerHeaderData };
+	  //   // const store = bigScreen();
+	  //   // store.setData(data);
+	  //   proxy.$Bus.emit("jumpAgency", {
+	  //     url: "/daily/routineInspection/manager",
+	  //     // data: data,
+	  //   });
+	  // };
+	  
 	  nextTick(() => {
 	    if (!dangerCarChart) {
 	      dangerCarChart = echarts.init(dangerCarRef.value);
@@ -382,6 +495,22 @@ const {
 		  ]
 		})
 		dangerCarChart && dangerCarChart.setOption(option);
+		
+		
+		dangerCarChart.off("click"); // 防止多次绑定
+		dangerCarChart.on("click", (params) => {
+		  const data = { largeScreen:true,...dangerCar};
+		  store.setData(data);
+		   router.push({
+		     path: "/bas/carRank",
+		     query: data,
+		   });
+		   // proxy.$Bus.emit("jumpAgency", {
+		   //   url: "/bas/carRank",
+		   //   data: data,
+		   // });
+		});
+		
 	  })
 	};
 	dangerCarEcharts()
@@ -389,6 +518,7 @@ const {
 	//危化品车辆分布
 	let dangerCarNetChart = null
 	let dangerCarNetRef = ref('');
+	let dangerCarNetListCount = ref(0);
 	const dangerCarNetEcharts =  async () => {
 	  let chartData = {
 	    data: [],
@@ -403,6 +533,8 @@ const {
 		  chartData.xData.push(item.dangerItemName);
 	  })
 	  
+	  if(chartData.data.length==0) return true;
+	  
 	  
 	  nextTick(() => {
 	    if (!dangerCarNetChart) {
@@ -415,6 +547,16 @@ const {
 	        ]
 	      })
 	      dangerCarNetChart && dangerCarNetChart.setOption(option);
+		  
+		  dangerCarNetChart.off("click"); // 防止多次绑定
+		  dangerCarNetChart.on("click", (params) => {
+		    const data = { largeScreen:true};
+		    store.setData(data);
+		     router.push({
+		       path: "/bas/dangerClassNewReport",
+		       query: data,
+		     });
+		  });
 	    }
 	  })
 	};
@@ -423,23 +565,24 @@ const {
 	/* 司机之家使用率排名: carUseRanking */
 	const carUse = reactive({
 	  selectTimeType: "0",
+	  timeList: [],
+	  time: null,
+	  startDate: null,
+	  endDate: null,
+	  type: null,
 	  queryStart: '',
 	  queryEnd: '',
 	});
 	function handleSelectCarUseRanking(payload) {
-	  carUse.selectTimeType = payload.code;
-	  if (payload.code === "6") {
-	    let timeRunge = payload.dateRange || [];
-		if(timeRunge[0]){
-			carUse.queryStart=timeRunge[0];
-		}
-		if(timeRunge[1]){
-			carUse.queryEnd=timeRunge[1];
-		}
-	  }else{
-		  carUse.queryStart=''
-		  carUse.queryEnd=''
-	  }
+	  let param=getSelectParam(payload);
+	  carUse.selectTimeType=param.selectTimeType;
+	  carUse.timeList=param.timeList;
+	  carUse.time=param.time;
+	  carUse.startDate=param.startDate;
+	  carUse.endDate=param.endDate;
+	  carUse.type=param.type;
+	  carUse.queryStart=param.startDate;
+	  carUse.queryEnd=param.endDate;
 	  getCarUseData();
 	}
 
@@ -456,6 +599,15 @@ const {
 		})
 	}
 	getCarUseData();
+	
+	const clickCarUseEven=()=>{
+		const data = { largeScreen:true,...carUse};
+		store.setData(data);
+		router.push({
+		  path: "/daily/dailyIncome",
+		  query: data,
+		});
+	}
 
 
 
@@ -474,6 +626,15 @@ const {
 		})
 	}
 	getEventDataList();
+	
+	const clickEventData=()=>{
+		const data = { largeScreen:true};
+		store.setData(data);
+		router.push({
+		  path: "/daily/eventReported",
+		  query: data,
+		});
+	}
 	
 	//服务区筛选数据
 	let searchRef = ref('');
@@ -501,7 +662,7 @@ const {
 				label:'5级'
 			},
 			{
-				value:'达标',
+				value:'达标,暂无星级',
 				label:'达标'
 			}
 		]
@@ -603,6 +764,19 @@ const {
 
 </script>
 <style lang="less" scoped>
+	::v-deep(.el-empty__description){
+	  margin-top: 10px;
+	}
+	/* 覆盖Element默认样式 */
+	:deep(.el-progress-circle__path) {
+	  stroke: v-bind(gradientColor); /* 动态绑定渐变色 */
+	  stroke-linecap: round; /* 圆角端点 */
+	}
+	
+	::v-deep(.el-progress-circle__track) {
+	  stroke: #507190;
+	}
+	
 	.mt24{
 		margin-top: 24px;
 	}
@@ -790,6 +964,7 @@ const {
 
 			tr{
 				background: rgba(27,130,183,0.12);
+				cursor: pointer;
 
 				&:hover{
 					background: rgba(27,130,183,0.22);
@@ -833,6 +1008,7 @@ const {
 		justify-content: center;
 		align-items: center;
 		position: relative;
+		background: #10282b;
 	}
 
 	.search-box{

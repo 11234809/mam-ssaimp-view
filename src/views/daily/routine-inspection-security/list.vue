@@ -288,6 +288,8 @@
 </template>
 
 <script>
+	import { bigScreen } from "@/store/bigScreen";
+	const store=bigScreen();
 export default {
     name: "securityStaff",
     data() {
@@ -344,6 +346,7 @@ export default {
                     size: this.pageSize,
                     ...this.formInline,
                     reportedByWho: 1,
+					largeScreen:store.chargeReportData.largeScreen?true:false
                 },
                 null,
                 function (result) {

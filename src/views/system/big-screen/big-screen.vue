@@ -1,6 +1,6 @@
 <!--
- * @Descripttion: 
- * @version: 
+ * @Descripttion:
+ * @version:
  * @Author: ysl
  * @Date: 2025-05-28 15:55:53
  * @LastEditors: ysl
@@ -9,14 +9,14 @@
 <template>
   <ScreenAdapter :width="1920" :height="1080">
     <Header
-      :theme-btn-list="themeBtnList"
-      :active-theme="activeTheme"
-      @theme-change="handleThemeBtn"
+        :theme-btn-list="themeBtnList"
+        :active-theme="activeTheme"
+        @theme-change="handleThemeBtn"
     />
     <component
-      :is="components[activeTheme.component]"
-      :key="activeTheme.id"
-      ref="activeComponent"
+        :is="components[activeTheme.component]"
+        :key="activeTheme.id"
+        ref="activeComponent"
     />
   </ScreenAdapter>
 </template>
@@ -29,7 +29,7 @@ import SmartEnergy from './components/smart-energy/index.vue';
 import SmartManagement from './components/smart-management/index.vue';
 import synthesizeManage from './components/smart-synthesize/index.vue';
 import SmartService from './components/smart-service/index.vue';
-import { ref, onMounted, computed, nextTick } from 'vue'
+import {nextTick, ref} from 'vue'
 
 const components = {
   SmartEnergy,
@@ -41,36 +41,36 @@ const components = {
 const themeBtnList = ref([{
   id: 1,
   name: "综合管理",
-  component:'synthesizeManage',
+  component: 'synthesizeManage',
   leftComponent: "SynthesizeLeft",
   rightComponent: "SynthesizeRight",
 }, {
   id: 2,
   name: '智慧能源',
-  component:'SmartEnergy',
+  component: 'SmartEnergy',
   leftComponent: "EnergyLeft",
   rightComponent: "EnergyRight",
 }
   , {
-  id: 3,
-  name: '智慧服务',
-  component:'SmartService',
-  leftComponent: "ServiceLeft",
-  rightComponent: "ServiceRight",
-},
-{
-  id: 4,
-  name: '智慧管理',
-  component:'SmartManagement',
-  leftComponent: "ManagementLeft",
-  rightComponent: "ManagementRight",
-}, {
-  id: 5,
-  name: '智慧经营',
-  component:'SmartEnergy',
-  leftComponent: "BusinessLeft",
-  rightComponent: "BusinessRight",
-}])
+    id: 3,
+    name: '智慧服务',
+    component: 'SmartService',
+    leftComponent: "ServiceLeft",
+    rightComponent: "ServiceRight",
+  },
+  {
+    id: 4,
+    name: '智慧管理',
+    component: 'SmartManagement',
+    leftComponent: "ManagementLeft",
+    rightComponent: "ManagementRight",
+  }, {
+    id: 5,
+    name: '智慧经营',
+    component: 'SmartEnergy',
+    leftComponent: "BusinessLeft",
+    rightComponent: "BusinessRight",
+  }])
 const activeTheme = ref(themeBtnList.value[0])
 
 // 智慧能源
@@ -78,7 +78,7 @@ const activeComponent = ref(null);
 
 function handleThemeBtn(item) {
   activeTheme.value = item;
-   nextTick(() => {
+  nextTick(() => {
     if (item.id === 2 && activeComponent.value?.refresh) {
       activeComponent.value.refresh();
     }
@@ -86,4 +86,34 @@ function handleThemeBtn(item) {
 }
 </script>
 
-<style scoped></style>
+<style lang="less">
+/* 滚动条轨道样式 */
+.screens-scroll-box::-webkit-scrollbar {
+  width: 8px; /* 设置滚动条宽度 */
+}
+
+/* 滚动条滑块样式 */
+
+.screens-scroll-box::-webkit-scrollbar-thumb {
+  background-color: #002766; /* 设置滑块背景颜色 */
+  border-radius: 4px; /* 设置滑块圆角 */
+}
+
+/* 滚动条轨道hover状态样式 */
+
+.screens-scroll-box::-webkit-scrollbar-track:hover {
+  background-color: #000; /* 设置轨道hover状态时的背景颜色 */
+}
+
+/* 滚动条滑块hover状态样式 */
+
+.screens-scroll-box::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* 设置滑块hover状态时的背景颜色 */
+}
+
+.screen-text-shadow {
+  text-shadow: 0 0 10px #1F7BCB,
+  0 0 15px #1F7BCB;
+  //filter: drop-shadow(0 0 5px #fff) drop-shadow(0 0 5px #fff); /* 使用drop-shadow增强发光效果 */
+}
+</style>

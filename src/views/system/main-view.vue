@@ -296,6 +296,26 @@ export default {
         this.menuName = "/statisticalForm/dailyRecord";
         this.$router.push({ path: "/statisticalForm/dailyRecord" });
         this.hanldSelect("/statisticalForm/dailyRecord", "");
+      }  else if (this.$route.path == "/daily/routineInspection/manager") {
+		  //巡检信息
+        this.menuName = "/daily/routineInspection/manager";
+        this.$router.push({ path: "/daily/routineInspection/manager" });
+        this.hanldSelect("/daily/routineInspection/manager", "");
+      }  else if (this.$route.path == "/daily/routineInspection/security") {
+		  //巡检信息
+        this.menuName = "/daily/routineInspection/security";
+        this.$router.push({ path: "/daily/routineInspection/security" });
+        this.hanldSelect("/daily/routineInspection/security", "");
+      }  else if (this.$route.path == "/bas/carRank") {
+		  //司机之家使用率排名
+        this.menuName = "/bas/carRank";
+        this.$router.push({ path: "/bas/carRank" });
+        this.hanldSelect("/bas/carRank", "");
+      }  else if (this.$route.path == "/daily/eventReported") {
+		  //事件信息
+        this.menuName = "/daily/eventReported";
+        this.$router.push({ path: "/daily/eventReported" });
+        this.hanldSelect("/daily/eventReported", "");
       } else {
         // 刷新
         this.menuName = "/workplace";

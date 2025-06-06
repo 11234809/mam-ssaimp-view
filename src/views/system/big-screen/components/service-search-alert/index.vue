@@ -7,7 +7,7 @@
  			<div class="close" @click="isShowSearch=false"></div>
  		</div>
  		
-		<div class="box-centent">
+		<div class="box-centent screens-scroll-box">
 			<div class="alert-item" v-for="(item,index) in fromData" :key="index">
 				<div class="item-tit">{{item.title}}：</div>
 				<div class="item-checkbox">

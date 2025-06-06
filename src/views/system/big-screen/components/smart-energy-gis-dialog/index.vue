@@ -10,7 +10,7 @@
       {{ subTitle }}
     </div>
 
-    <div class="dialog-content2">
+    <div class="dialog-content2" v-loading="loading">
       <!-- 右侧字段信息 -->
       <div class="right-info" v-if="stationData.type == '1'">
         <!-- 充电站名称 -->
@@ -208,7 +208,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, reactive, watch, onMounted } from "vue";
+import { queryNormalOptions } from "@/api/bigScreen/index.js";
 
 const props = defineProps({
   visible: {
@@ -233,61 +234,101 @@ const emit = defineEmits(["update:visible", "close"]);
 
 const visibleInner = ref(props.visible);
 
+const params = {
+  queriers: [
+    {
+      alias: "stationStatusDictionary",
+      param: null,
+    },
+    {
+      alias: "stationTypeDictionary",
+      param: null,
+    },
+    {
+      alias: "stationPayDictionary",
+      param: null,
+    },
+    {
+      alias: "exStationTypeDictionary",
+      param: null,
+    },
+    {
+      alias: "exchangeStatusDictionary",
+      param: null,
+    },
+    {
+      alias: "basAreaInfoElectTypeDictionary",
+      param: null,
+    },
+    {
+      alias: "basAreaInfoModeDictionary",
+      param: null,
+    },
+  ],
+};
+const dictionaries = reactive({
+  exchangeStatusDictionary: [],
+  stationStatusDictionary: [],
+  stationTypeDictionary: [],
+  basAreaInfoModeDictionary: [],
+  stationPayDictionary: [],
+  exStationTypeDictionary: [],
+  basAreaInfoElectTypeDictionary: [],
+});
+// 获取到字典参数
+const getDictionary = async () => {
+  const res = await queryNormalOptions(params);
+  if (res && res.data) {
+    Object.keys(dictionaries).forEach((key) => {
+      if (res.data[key]) {
+        dictionaries[key] = res.data[key];
+      }
+    });
+  }
+};
+
+function findNameByCode(dictArray, code) {
+  if (!dictArray || dictArray.length === 0) return "";
+  // 传入的code可能是数字或者字符串，需要保证匹配一致
+  const codeStr = String(code);
+  const item = dictArray.find((d) => String(d.code) === codeStr);
+  return item ? item.name : "";
+}
+// 运营状态
+const getExchangeStatusText = (status) => {
+  return (
+    findNameByCode(dictionaries.exchangeStatusDictionary, status) || status
+  );
+};
 /* 光伏发电 */
 // 光伏发电-并网模式
 const getSynchronizeModeText = (type) => {
-  const synchronizeModeMap = {
-    0: "自发自用",
-    1: "自发自用",
-    2: "余电上网",
-    3: "全额上网",
-  };
-  return synchronizeModeMap[type];
+  return findNameByCode(dictionaries.basAreaInfoModeDictionary, type);
 };
 
 // 光伏发电-类型
 const getPhotoTypeText = (type) => {
-  const photoTypeMap = {
-    0: "独立光伏",
-    1: "分布式光伏",
-  };
-  return photoTypeMap[type];
+  return findNameByCode(dictionaries.basAreaInfoElectTypeDictionary, type);
 };
 
 /* 换电桩 */
 const getStationTypeText = (type) => {
-  const stationTypeMap = {
-    1: "小客车换电",
-    2: "普通货车换电",
-    3: "重型卡车换电",
-  };
-  return stationTypeMap[type];
+  return findNameByCode(dictionaries.exStationTypeDictionary, type);
 };
 
 // 支付方式转换
 const getPaymentMethodText = (method) => {
-  const paymentMethodMap = {
-    1: "刷卡",
-    199: "充电卡",
-    2: "线上",
-    201: "微信",
-    202: "支付宝",
-    299: "二维码",
-    298: "账户余额",
-    297: "电子钱包",
-  };
+  const name = findNameByCode(dictionaries.stationPayDictionary, method);
+  if (name) return name;
 
-  // 处理1xx和2xx的通用情况
-  if (!paymentMethodMap[method]) {
-    if (method.startsWith("1")) {
-      return "刷卡(其他)";
-    } else if (method.startsWith("2")) {
-      return "线上(其他)";
-    }
-    return "未知支付方式";
+  // 旧的fallback逻辑
+  const methodStr = String(method);
+  if (methodStr.startsWith("1")) {
+    return "刷卡(其他)";
+  } else if (methodStr.startsWith("2")) {
+    return "线上(其他)";
   }
-
-  return paymentMethodMap[method];
+  return "未知支付方式";
 };
 
 // 7X24小时营业
@@ -299,14 +340,10 @@ const formatBoolean = (value) => {
 
 // 站点状态
 const getStatusText = (status) => {
-  const statusMap = {
-    0: "未知",
-    1: "建设中",
-    5: "关闭下线",
-    6: "维护中",
-    50: "正常使用",
-  };
-  return statusMap[status] || `未知状态(${status})`;
+  return (
+    findNameByCode(dictionaries.stationStatusDictionary, status) ||
+    `未知状态(${status})`
+  );
 };
 
 // 同步外部visible变化
@@ -328,6 +365,10 @@ watch(visibleInner, (val) => {
 const handleClose = () => {
   visibleInner.value = false;
 };
+
+onMounted(() => {
+  getDictionary();
+});
 </script>
 
 <style scoped>

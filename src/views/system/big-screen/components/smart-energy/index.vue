@@ -4,7 +4,7 @@
  * @Author: ysl
  * @Date: 2025-05-28 15:55:53
  * @LastEditors: ysl
- * @LastEditTime: 2025-06-06 10:52:26
+ * @LastEditTime: 2025-06-06 18:38:16
 -->
 <template>
   <div class="smart-energy">
@@ -188,13 +188,16 @@
           </div>
         </div>
       </div>
-      <div style="padding: 10px">
-        <el-input
-          v-model="input"
-          style="width: 278px; border-radius: 2px; border: 1px #5bc7fc dashed"
-          placeholder="服务区搜索"
-          suffix-icon="Search"
-        />
+      <div class="search-box">
+        <div class="search-input-box">
+          <input
+            type="text"
+            class="input"
+            v-model="serviceParams.serviceAreaName"
+            placeholder="服务区搜索"
+          />
+          <div class="box-btn" @click="getServiceListData"></div>
+        </div>
       </div>
       <div class="center-bottom" style="height: 99vh">
         <Map
@@ -249,7 +252,8 @@
       v-model:visible="showDialog"
       :station-data="chargeStationData"
       :sub-title="subTitle"
-      style="background: rgba(17, 47, 73, 0.7)"
+      :loading="loading"
+      style="background: rgba(17, 47, 73, 0.7); border: 2px solid #3ee5fa"
     />
   </div>
 </template>
@@ -296,6 +300,7 @@ const input = ref("");
 const showDialog = ref(false);
 
 const chargeStationData = ref({});
+const loading = ref(false);
 const subTitle = ref("");
 const smartEnergy = ref("smartEnergy");
 const photoUrls = ref([]);
@@ -325,8 +330,10 @@ const markerClick = async (item) => {
   const config = typeMap[item.type];
 
   showDialog.value = true;
+  loading.value = true; // 开始加载
   let res;
   // 充电站
+
   if (config) {
     res = await config.api({ serviceAreaName: item.serviceAreaName });
     subTitle.value = config.title;
@@ -353,7 +360,6 @@ const markerClick = async (item) => {
       : [];
     // const photoUrls =
     //   "http://192.168.100.124:18020/api/pub/common/file/download?service=basServiceAreaInfoFileServiceImpl&id=1930539113259704321";
-    console.log(photoUrls, "photoUrls");
     const processedPaymentMethods = parsePaymentMethods(
       stationData.paymentMethods
     );
@@ -367,6 +373,7 @@ const markerClick = async (item) => {
   if (item.type != "1") {
     chargeStationData.value = data;
   }
+  loading.value = false; // 加载结束
 };
 const parsePaymentMethods = (input) => {
   if (!input) return [];
@@ -432,82 +439,91 @@ const getCenterHeaderData = async () => {
 const mapRef = ref();
 // 地图数据
 const mapData = ref([]);
+const serviceParams = reactive({
+  serviceAreaName: "", //服务区名称
+});
 const mapEcharts = async () => {
   await mapLoaded();
 };
 
-const mapLoaded = async () => {
-  const res = await getSmartEnergyLocation();
+const getServiceListData = async () => {
+  await mapLoaded(serviceParams);
+};
+
+const mapLoaded = async (params) => {
+  const res = await getSmartEnergyLocation(params);
   mapData.value = res.data.records;
-  const list = [
-    {
-      type: "5",
-      serviceAreaName: "垫江服务区（进城）",
-      lng: 108.232755,
-      lat: 30.45502,
-    },
-  ];
+  // const list = [
+  //   {
+  //     type: "5",
+  //     serviceAreaName: "垫江服务区（进城）",
+  //     lng: 108.232755,
+  //     lat: 30.45502,
+  //   },
+  // ];
   const deepCopiedRecords = JSON.parse(JSON.stringify(res.data.records));
   // console.log(deepCopiedRecords, "deepCopiedRecords");
 
   // 转换为统一格式
-  // const list = [];
-  // deepCopiedRecords.forEach((item) => {
-  //   if (
-  //     item.chargeStationBeanList &&
-  //     item.chargeStationBeanList.csLng != null &&
-  //     item.chargeStationBeanList.csLat != null
-  //   ) {
-  //     list.push({
-  //       type: "1",
-  //       lng: Number(item.chargeStationBeanList.csLng),
-  //       lat: Number(item.chargeStationBeanList.csLat),
-  //       serviceAreaName: item.chargeStationBeanList.stationName,
-  //     });
-  //   }
-  //   if (
-  //     item.oilBean &&
-  //     item.oilBean.oilLng != null &&
-  //     item.oilBean.oilLat != null
-  //   ) {
-  //     list.push({
-  //       type: "2",
-  //       lng: Number(item.oilBean.oilLng),
-  //       lat: Number(item.oilBean.oilLat),
-  //       serviceAreaName: item.oilBean.oilName,
-  //     });
-  //   }
-  //   if (
-  //     item.airBean &&
-  //     item.airBean.airLng != null &&
-  //     item.airBean.airLat != null
-  //   ) {
-  //     list.push({
-  //       type: "3",
-  //       lng: Number(item.airBean.airLng),
-  //       lat: Number(item.airBean.airLat),
-  //       serviceAreaName: item.airBean.airName,
-  //     });
-  //   }
-  //   if (item.exBean && item.exBean.exLng != null && item.exBean.exLat != null) {
-  //     list.push({
-  //       type: "4",
-  //       lng: Number(item.exBean.exLng),
-  //       lat: Number(item.exBean.exLat),
-  //       serviceAreaName: item.exBean.exName,
-  //     });
-  //   }
-  //   if (item.gfBean && item.gfBean.gfLng != null && item.gfBean.gfLat != null) {
-  //     list.push({
-  //       type: "5",
-  //       lng: Number(item.gfBean.gfLng),
-  //       lat: Number(item.gfBean.gfLat),
-  //       serviceAreaName: item.gfBean.gfName,
-  //     });
-  //   }
-  // });
+  const list = [];
+  deepCopiedRecords.forEach((item) => {
+    if (
+      item.chargeStationBeanList &&
+      item.chargeStationBeanList.csLng != null &&
+      item.chargeStationBeanList.csLat != null
+    ) {
+      list.push({
+        type: "1",
+        lng: Number(item.chargeStationBeanList.csLng),
+        lat: Number(item.chargeStationBeanList.csLat),
+        serviceAreaName: item.chargeStationBeanList.stationName,
+      });
+    }
+    if (
+      item.oilBean &&
+      item.oilBean.oilLng != null &&
+      item.oilBean.oilLat != null
+    ) {
+      list.push({
+        type: "2",
+        lng: Number(item.oilBean.oilLng),
+        lat: Number(item.oilBean.oilLat),
+        serviceAreaName: item.oilBean.oilName,
+      });
+    }
+    if (
+      item.airBean &&
+      item.airBean.airLng != null &&
+      item.airBean.airLat != null
+    ) {
+      list.push({
+        type: "3",
+        lng: Number(item.airBean.airLng),
+        lat: Number(item.airBean.airLat),
+        serviceAreaName: item.airBean.airName,
+      });
+    }
+    if (item.exBean && item.exBean.exLng != null && item.exBean.exLat != null) {
+      list.push({
+        type: "4",
+        lng: Number(item.exBean.exLng),
+        lat: Number(item.exBean.exLat),
+        serviceAreaName: item.exBean.exName,
+      });
+    }
+    if (item.gfBean && item.gfBean.gfLng != null && item.gfBean.gfLat != null) {
+      list.push({
+        type: "5",
+        lng: Number(item.gfBean.gfLng),
+        lat: Number(item.gfBean.gfLat),
+        serviceAreaName: item.gfBean.gfName,
+      });
+    }
+  });
   // console.log(list, "=======================");
-
+ if (params) {
+    mapRef.value.removeAllMarkers();
+  }
   mapRef.value.setMarkers(list);
 };
 
@@ -1075,16 +1091,16 @@ defineExpose({ refresh });
 <style scoped>
 .smart-energy {
   display: flex;
-  height: calc(100% - 108px);
+  height: calc(100% - 94px);
   width: 100%;
   color: #fff;
-  margin-top: -100px;
+  margin-top: -117px;
   padding: 0px 2px;
 }
 
 .smart-energy-left,
 .smart-energy-right {
-  flex: 1;
+  width: 460px;
   height: 100%;
   background-color: #16283a;
   /* 各占1份 */
@@ -1106,7 +1122,7 @@ defineExpose({ refresh });
 .item-top {
   flex: 1;
   color: #fff;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   margin-top: 8px;
   margin-left: 5.75rem;
@@ -1310,5 +1326,47 @@ defineExpose({ refresh });
   font-size: 16px;
   color: #fff;
   font-weight: normal;
+}
+
+.search-box {
+  width: 100%;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  margin-top: 26px;
+}
+
+.search-input-box {
+  width: 190px;
+  height: 41px;
+  box-sizing: border-box;
+  border: 1px solid #5bc7fc;
+  margin-left: 19px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input {
+  height: 39px;
+  width: 143px;
+  padding: 5px 10px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: #fff;
+  background: transparent;
+  border: 0;
+}
+
+.input::placeholder {
+  color: #fff;
+}
+
+.box-btn {
+  width: 40px;
+  height: 41px;
+  background: url("../../images/manage/search.png") 4px center no-repeat;
+  background-size: 18px 18px;
+  cursor: pointer;
 }
 </style>

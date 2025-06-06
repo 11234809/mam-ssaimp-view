@@ -222,6 +222,7 @@ const getData = async () => {
     endDate: formData.checkTime ? formData.checkTime[1] : null,
     index: page.value,
     size: pageSize.value,
+    largeScreen:store.chargeReportData.largeScreen?true:false
   }).then((res) => {
     if (res.code === 200) {
       tableData.value = res.data.records;

@@ -2,7 +2,7 @@
   <div
     id="container"
     v-loading="loading"
-    element-loading-background="#1c3954"
+    element-loading-background="#10272A"
     element-loading-text="地图资源加载中..."
     v-bind="$attrs"
   >
@@ -74,7 +74,7 @@
 </template>
 
 <script setup>
-import { defineEmits, defineExpose, onMounted, ref } from "vue";
+import {defineEmits, defineExpose, onMounted, ref} from "vue";
 import AMapLoader from "@amap/amap-jsapi-loader";
 import cqJson from "@/components/map/data/chongqing.json";
 
@@ -288,7 +288,7 @@ onMounted(() => {
             strokeColor: "#00BFFF", //城市边界颜色 //城市边界颜色
             strokeWeight: 2,
             fillColor: "#131925", // 遮罩背景色黑色
-            fillOpacity: 1,
+            fillOpacity: .2,
           });
           polygon.setPath(pathArray);
           map.add(polygon);
