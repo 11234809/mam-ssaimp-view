@@ -4,7 +4,7 @@
  * @Author: lkr
  * @Date: 2025-05-28 15:55:53
  * @LastEditors: lkr
- * @LastEditTime: 2025-06-05 18:51:42
+ * @LastEditTime: 2025-06-06 10:34:46
 -->
 <template>
   <keep-alive>
@@ -17,7 +17,7 @@
             <TimeTypeSelector v-model="timeSelector.perRankTimeType" @select="(payload) => handleSelect(payload, 'perRank')" />
           </div>
           <div class="item-bottom">
-            <div ref="footfallRankingRef" style="width: 90%; height: 30vh"></div>
+            <div ref="footfallRankingRef" style="width: 90%; height: 30vh;overflow-y: hidden;"></div>
           </div>
         </div>
         <!-- 服务区充电排名 -->
@@ -75,7 +75,7 @@
             <TimeTypeSelector v-model="timeSelector.carRankTimeType" @select="(payload) => handleSelect(payload, 'sacarRanktisfy')" />
           </div>
           <div class="item-bottom">
-            <div ref="carfallRankingRef" style="width: 90%; height: 30vh"></div>
+            <div ref="carfallRankingRef" style="width: 90%; height: 30vh;"></div>
           </div>
         </div>
         <div class="smart-service-right-item">
@@ -122,9 +122,9 @@ import { bigScreen } from "@/store/bigScreen";
 import {
   getQueryPage,
 } from "@/api/guestFlow/index.js";
-import { getRowBarOption, getPie3D, getLineChartOption, handleWheel,getRadar,get3DBarOption } from '../../service'
+import { getRowBarOption, getPie3D, getLineChartOption, getRadar,get3DBarOption } from '../../service'
 import {
-  getTotalPeopleInfoBySa,getTotalPeopleInfoByAge,getTotalCardInfoBySa,getTotalCardInfoByTime,getTotalIndex,getScreenInquireStat
+  getTotalPeopleInfoBySa,getTotalPeopleInfoByAge,getTotalCardInfoBySa,getTotalCardInfoByTime,getTotalIndex,getScreenInquireStat,getTotalNewEnergy
 } from "@/api/bigScreen/index.js";
 import searchAlert from '../service-search-alert/index';
 
@@ -166,7 +166,7 @@ const timeSelector = reactive({
     new Date() // 结束时间为当前时间
   ],
   satisfyTimeType: '0',
-  newEnergyTrafficTimeType: ''
+  newEnergyTrafficTimeType: '1'
 })
 const validateDateRange = () => {
   if (!value1.value || value1.value.length !== 2) return;
@@ -207,7 +207,8 @@ const handleSelect =async (payload,type) => {
       getLineChart()
       break;
     case 'newEnergyPer':
-      getEnerenergyEcharts(payload)
+      await getTotalNewEnergyData(payload)
+      getEnerenergyEcharts()
       break;
   }
 };
@@ -257,6 +258,7 @@ const PersonalAgeData = ref([])
 const carRankData = ref([])
 const car7dayData = ref([])
 const satisfyData = ref([])
+const TotalNewEnergyData = ref([])
 //获取客流量排名数据
 const getPersonalData = async (payload = {}) => {
   let params = {
@@ -327,6 +329,17 @@ const getSatisfyData = async () => {
     satisfyData.value = res.data
   }
 };
+//获取新能源车排名数据
+const getTotalNewEnergyData = async (payload) => {
+  let params = {
+    selectTimeType: timeSelector.newEnergyTrafficTimeType,
+    timeList:payload && payload.code=='6'&&payload.dateRange.length==2? payload.dateRange:null
+  };
+  let res = await getTotalNewEnergy(params);
+  if (res.code == 200) {
+    TotalNewEnergyData.value = res.data.records
+  }
+};
 const getfootfallEcharts = async () => {
   let chartData = reactive({});
   console.log(PersonalData.value)
@@ -360,13 +373,14 @@ const getfootfallEcharts = async () => {
     });
     chartDom.addEventListener('mouseenter', () => stopScroll('foot'));
     chartDom.addEventListener('mouseleave', () => startScroll(chartData, barColor, footFallChart, 'foot'));
-    chartDom.addEventListener('wheel', (e) => {
-      if (wheelTimeout) clearTimeout(wheelTimeout);
-      wheelTimeout = setTimeout(() => {
-        handleWheel(e, chartData, barColor, footFallChart, 'foot')
-      }, 150);
-    }
-    );
+    // chartDom.addEventListener('wheel', (e) => {
+    //   if (wheelTimeout) clearTimeout(wheelTimeout);
+    //   wheelTimeout = setTimeout(() => {
+    //     if(footFallChart){
+    //       handleWheel(e, chartData, barColor, footFallChart, 'foot')
+    //     }
+    //   }, 150);
+    // });
   }
   });
 };
@@ -403,13 +417,14 @@ const getcarfallEcharts = () => {
     let wheelTimeout;
     chartDom.addEventListener('mouseenter', () => stopScroll('car'));
     chartDom.addEventListener('mouseleave', () => startScroll(chartData, barColor, carFallChart, 'car'));
-    chartDom.addEventListener('wheel', (e) => {
-      if (wheelTimeout) clearTimeout(wheelTimeout);
-      wheelTimeout = setTimeout(() => {
-        handleWheel(e, chartData, barColor, footFallChart, 'car')
-      }, 150);
-    }
-    );
+    // chartDom.addEventListener('wheel', (e) => {
+    //   if (wheelTimeout) clearTimeout(wheelTimeout);
+    //   wheelTimeout = setTimeout(() => {
+    //     if(carFallChart){
+    //       handleWheel(e, chartData, barColor, carFallChart, 'car')
+    //     }
+    //   }, 150);
+    // });
 
   });
 };
@@ -718,7 +733,9 @@ const getSatisfyEcharts = () => {
 const getEnerenergyEcharts = () => {
   nextTick(() =>{
       enerenergyChart = echarts.init(enerenergyRef.value);
-      let option = get3DBarOption([], { 
+      let data = TotalNewEnergyData.value
+       console.log(data)
+      let option = get3DBarOption(data, { 
       });
       if (option && typeof option === 'object') {
         enerenergyChart.setOption(option);
@@ -741,7 +758,34 @@ const handleSelectComeOn = (payload) => {
   // }
   // getfootfallEcharts();
 };
+// 手动翻页函数
+const handleWheel = (event, data, barColor, chartInstance, key) => {
+  stopScroll(key); // 停止自动滚动
 
+  const total = data.data.length;
+  const displayCount = 4;
+  let index = scrollIndices[key];
+
+  if (event.deltaY < 0) {
+    // 向上滚动
+    index = Math.max(0, index - 1);
+  } else {
+    // 向下滚动
+    index = Math.min(total - displayCount, index + 1);
+  }
+
+  scrollIndices[key] = index;
+
+  const visibleData = data.data.slice(index, index + displayCount);
+  const visibleNames = data.yData.slice(index, index + displayCount);
+
+  const options = getRowBarOption(
+    { data: visibleData, yData: visibleNames },
+    { barColor }
+  );
+
+  chartInstance.setOption(options);
+};
 const stopScroll = (key) => {
   if (key === 'car' && carScrollTimer.value) {
     clearInterval(carScrollTimer.value);
@@ -762,6 +806,7 @@ onMounted(async () => {
   await getCar7dayData()
   await getTotalInfo()
   await getSatisfyData()
+  await getTotalNewEnergyData()
   getfootfallEcharts()
   get3DpieChart()
   getcarfallEcharts()
@@ -966,6 +1011,7 @@ const startScroll = (data, barColor, chartInstance, key) => {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  overflow: hidden;
   color: #fff;
   gap: 2px;
   /* 可以加点间距，看效果 */
@@ -1162,4 +1208,14 @@ const startScroll = (data, barColor, chartInstance, key) => {
 			}
 		}
 	}
+</style>
+<style lang="less">
+.smart-service-right-item {
+  ::-webkit-scrollbar {
+    display: none; /* 隐藏 Chrome/Safari 滚动条 */
+  }
+
+  -ms-overflow-style: none;  /* 隐藏 IE 滚动条 */
+  scrollbar-width: none;  /* 隐藏 Firefox 滚动条 */
+}
 </style>

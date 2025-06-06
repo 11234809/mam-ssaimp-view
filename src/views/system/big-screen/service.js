@@ -1,4 +1,5 @@
 import * as echarts from "echarts";
+import { min } from "moment";
 
 
 const getRowBarOption = (data,config) => {
@@ -604,34 +605,6 @@ const getLineChartOption = (data, config) => {
   };
   return option;
 };
-// 手动翻页函数
-const handleWheel = (event, data, barColor, chartInstance, key) => {
-  stopScroll(key); // 停止自动滚动
-
-  const total = data.data.length;
-  const displayCount = 4;
-  let index = scrollIndices[key];
-
-  if (event.deltaY < 0) {
-    // 向上滚动
-    index = Math.max(0, index - 1);
-  } else {
-    // 向下滚动
-    index = Math.min(total - displayCount, index + 1);
-  }
-
-  scrollIndices[key] = index;
-
-  const visibleData = data.data.slice(index, index + displayCount);
-  const visibleNames = data.yData.slice(index, index + displayCount);
-
-  const options = getRowBarOption(
-    { data: visibleData, yData: visibleNames },
-    { barColor }
-  );
-
-  chartInstance.setOption(options);
-};
 const getRadar = (data, config) => {
   console.log(data)
   let max = Math.max(...(data.map(x=>x.value)))
@@ -765,9 +738,10 @@ const get3DBarOption = (data, config) => {
   echarts.graphic.registerShape("CubeLeft", CubeLeft);
   echarts.graphic.registerShape("CubeRight", CubeRight);
   echarts.graphic.registerShape("CubeTop", CubeTop);
-  const VALUE = [
-    2012, 1230, 3790, 2349, 1654, 1230, 3790, 2349, 1654, 3790, 2349, 1654,
-  ];
+  const VALUE = data.map(x=>x.newEnergyTraffic);
+  //  [
+  //   2012, 1230, 3790, 2349, 1654, 1230, 3790, 2349, 1654, 3790, 2349, 1654,
+  // ];
   let option = {
     grid: {
       top:"-10%",
@@ -776,20 +750,7 @@ const get3DBarOption = (data, config) => {
     },
     xAxis: {
       type: "category",
-      data: [
-        "德州",
-        "德城区",
-        "陵城区",
-        "禹城市",
-        "乐陵市",
-        "临邑县",
-        "平原县",
-        "夏津县",
-        "武城县",
-        "庆云县",
-        "宁津县",
-        "齐河县",
-      ],
+      data: data.map(x=>x.serviceName),
       axisLine: {
         show: true,
         lineStyle: {
@@ -810,6 +771,7 @@ const get3DBarOption = (data, config) => {
     },
     yAxis: {
       type: "value",
+      min:0,
       axisLine: {
         show: true,
         lineStyle: {
@@ -939,4 +901,4 @@ const get3DBarOption = (data, config) => {
   };
   return option;
 };
-export { getRowBarOption,getPie3D,getParametricEquation,getLineChartOption,handleWheel,getRadar,get3DBarOption };
+export { getRowBarOption,getPie3D,getParametricEquation,getLineChartOption,getRadar,get3DBarOption };

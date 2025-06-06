@@ -4,7 +4,7 @@
  * @Author: ysl
  * @Date: 2025-05-28 15:55:53
  * @LastEditors: ysl
- * @LastEditTime: 2025-06-05 19:56:58
+ * @LastEditTime: 2025-06-06 10:52:26
 -->
 <template>
   <div class="smart-energy">
@@ -348,7 +348,7 @@ const markerClick = async (item) => {
             (id) =>
               process.env.VUE_APP_API_HOST_URL +
               process.env.VUE_APP_API_BASE_URL +
-              `/api/pub/common/file/download?service=basServiceAreaInfoFileServiceImpl&id=${id}`
+              `/pub/common/file/download?service=basServiceStationFileServiceImpl&id=${id}`
           )
       : [];
     // const photoUrls =
@@ -364,7 +364,7 @@ const markerClick = async (item) => {
       ...data,
     };
   }
-  if (item.type == 2) {
+  if (item.type != "1") {
     chargeStationData.value = data;
   }
 };
@@ -441,7 +441,7 @@ const mapLoaded = async () => {
   mapData.value = res.data.records;
   const list = [
     {
-      type: "3",
+      type: "5",
       serviceAreaName: "垫江服务区（进城）",
       lng: 108.232755,
       lat: 30.45502,

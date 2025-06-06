@@ -75,7 +75,7 @@ onMounted(() => {
 
 .header-left {
   position: absolute;
-  font-size: 42px;
+  font-size: 38px;
   font-weight: bold;
   color: #ccc;
   top: 20px;
