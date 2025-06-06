@@ -18,15 +18,15 @@
 							<div class="item-ul">
 								<div class="ul-item">
 									<div class="tit">计划</div>
-									<div class="number1">182</div>
+									<div class="number1">{{manageInfoData.managerPlanCount}}</div>
 								</div>
 								<div class="ul-item w2">
 									<div class="tit">完成</div>
-									<div class="number2">182</div>
+									<div class="number2">{{manageInfoData.managerCompleteCount}}</div>
 								</div>
 								<div class="ul-item">
 									<div class="tit">完成率</div>
-									<div class="number2">82%</div>
+									<div class="number2">{{manageInfoData.managerCompleteRate}}%</div>
 								</div>
 							</div>
 						</div>
@@ -41,15 +41,15 @@
 							<div class="item-ul">
 								<div class="ul-item">
 									<div class="tit">计划</div>
-									<div class="number1">182</div>
+									<div class="number1">{{manageInfoData.securityPlanCount}}</div>
 								</div>
 								<div class="ul-item w2">
 									<div class="tit">完成</div>
-									<div class="number2">182</div>
+									<div class="number2">{{manageInfoData.securityCompleteCount}}</div>
 								</div>
 								<div class="ul-item">
 									<div class="tit">完成率</div>
-									<div class="number2">82%</div>
+									<div class="number2">{{manageInfoData.securityCompleteRate}}%</div>
 								</div>
 							</div>
 						</div>
@@ -82,7 +82,7 @@
 						<img src="../../images/manage/wx.png" class="icon" />
 						<div class="center-header-item-bottom">
 							<div class="center-header-item-bottom-time">
-								<span class="center-header-item-bottom-time-num">{{centerHeaderData.dangerCount}}</span>
+								<span class="center-header-item-bottom-time-num">{{centerHeaderData.dangerTotal}}</span>
 							</div>
 							<div class="center-header-item-bottom-label">危化品车辆</div>
 						</div>
@@ -92,7 +92,7 @@
 						<img src="../../images/manage/sj.png" class="icon"/>
 						<div class="center-header-item-bottom">
 							<div class="center-header-item-bottom-time">
-								<span class="center-header-item-bottom-time-num">{{centerHeaderData.serviceCount}}</span>
+								<span class="center-header-item-bottom-time-num">{{centerHeaderData.truckTotal}}</span>
 							</div>
 							<div class="center-header-item-bottom-label">司机之家服务人次</div>
 						</div>
@@ -101,7 +101,7 @@
 						<img src="../../images/manage/jg.png"  class="icon"/>
 						<div class="center-header-item-bottom">
 							<div class="center-header-item-bottom-time">
-								<span class="center-header-item-bottom-time-num">{{centerHeaderData.suddenCount}}</span>
+								<span class="center-header-item-bottom-time-num">{{centerHeaderData.eventTotal}}</span>
 							</div>
 							<div class="center-header-item-bottom-label">突发事件</div>
 						</div>
@@ -114,12 +114,12 @@
 					</div>
 
 					<div class="search-input-box">
-						<input type="text" class="input" placeholder="服务区搜索" />
-						<div class="box-btn"></div>
+						<input type="text" class="input" v-model="serviceParams.serviceAreaName" placeholder="服务区搜索" />
+						<div class="box-btn" @click="getServiceListData"></div>
 					</div>
 				</div>
 				<div class="center-bottom">
-					<Map />
+					<Map ref="mapRef" @markerClick="markerClick"  />
 				</div>
 			</div>
 			<!-- center end -->
@@ -197,7 +197,7 @@
 			<!-- 服务器筛选 end -->
 
 			<!-- 服务区详情 -->
-			<searchAreaAlert></searchAreaAlert>
+			<searchAreaAlert ref="serviceInfoRef" :id="serviceId"></searchAreaAlert>
 
 		</div>
 	</keep-alive>
@@ -213,6 +213,17 @@ import searchAlert from '../service-search-alert/index';
 import searchAreaAlert from '../service-area-alert/index';
 import Map from '@/components/map/index.vue';
 
+import {
+  getManageInfo,
+  getServiceRanking,
+  getServiceCarDis,
+  getServiceAreaList,
+  getEventList,
+  getTruckHomeList,
+  getDataTotal,
+  getRoadLineList
+} from "@/api/bigScreen/management.js";
+
 const {
 		proxy
 	} = getCurrentInstance();
@@ -223,46 +234,154 @@ const {
 	//   searchAreaAlert,
 	//   map
 	// }
-
-	//顶部数据
-	const centerHeaderData = reactive({
-		dangerCount: 0, //危化品车辆
-		serviceCount: 0, //司机之家服务人次
-		suddenCount: 0, //突发事件
+	
+	
+	//巡检信息
+	const manageInfoData = reactive({
+		managerCompleteCount:0,
+		managerCompleteRate:0,
+		managerPlanCount:0,
+		securityCompleteCount:0,
+		securityCompleteRate:0,
+		securityPlanCount:0,
 	});
+	
+	//指标汇总
+	const centerHeaderData = reactive({
+		dangerTotal: 0, //危化品车辆
+		truckTotal: 0, //司机之家服务人次
+		eventTotal: 0, //突发事件
+	});
+	
+	//初始化
+	const init=async () => {
+		//巡检信息
+		let res = await getManageInfo();
+		let info =res.data.records[0];
+		
+		manageInfoData.managerCompleteCount=info.managerCompleteCount;
+		manageInfoData.managerCompleteRate=info.managerCompleteRate;
+		manageInfoData.managerPlanCount=info.managerPlanCount;
+		manageInfoData.securityCompleteCount=info.securityCompleteCount;
+		manageInfoData.securityCompleteRate=info.securityCompleteRate;
+		manageInfoData.securityPlanCount=info.securityPlanCount;
+		
+		//指标汇总
+		res = await getDataTotal();
+		info =res.data;
+		centerHeaderData.dangerTotal=info.dangerTotal;
+		centerHeaderData.truckTotal=info.truckTotal;
+		centerHeaderData.eventTotal=info.eventTotal;
+	}
+	init();
+	
+	//服务区查询
+	let serviceInfoRef = ref('');
+	let mapRef = ref('');
+	const serviceId = ref(0);
+	const serviceParams = reactive({
+		serviceAreaName: '', //服务区名称
+		highSpeed: '', //所在高速 逗号隔开
+		star: '', //星级 逗号隔开
+		status: '', //服务区状态 逗号隔开
+		specService: '', //是否特色服务区 1 是 0 否
+		truckHome: '', //是否司机之家 1 是 0 否
+		station: '', //是否同心驿站 1 是 0 否
+	});
+	const getServiceListData=()=>{
+		getServiceAreaList(serviceParams).then(res=>{
+			console.log(res.data.records)
+			mapRef.value.removeAllMarkers();
+			
+			let mapArr=[];
+			
+			res.data.records.forEach(item=>{
+				let n=2;
+				if(item.star=='三星级'){
+					n=3;
+				}
+				if(item.star=='四星级'){
+					n=4;
+				}
+				if(item.star=='五星级'){
+					n=5;
+				}
+				
+				mapArr.push({
+					...item,
+					type:item.status,
+					starNum:n,
+					lng:item.lng,
+					lat:item.lat,
+				});
+			})
+			mapRef.value.setMarkers(mapArr)
+		})
+	}
+	
+	//地图点击
+	function markerClick(res){
+		console.log(res)
+		serviceId.value=res.serviceAreaId;
+		
+		
+		nextTick(() => {
+		  serviceInfoRef.value.open()
+		})
+	}
+	
 
 	/* 危化品车辆排名: DangerCarRanking */
 	const dangerCar = reactive({
 	  selectTimeType: "0",
-	  dateRange: [],
+	  queryStart: '',
+	  queryEnd: '',
 	});
 	function handleSelectDangerCarRanking(payload) {
 	  dangerCar.selectTimeType = payload.code;
 	  if (payload.code === "6") {
-	    dangerCar.dateRange = payload.dateRange || [];
+	    let timeRunge = payload.dateRange || [];
+		if(timeRunge[0]){
+			dangerCar.queryStart=timeRunge[0];
+		}
+		if(timeRunge[1]){
+			dangerCar.queryEnd=timeRunge[1];
+		}
+	  }else{
+		  dangerCar.queryStart=''
+		  dangerCar.queryEnd=''
 	  }
-	  // chargingRankingEcharts(payload);
+	  dangerCarEcharts();
 	}
 
 	let dangerCarChart = null
 	let dangerCarRef = ref('');
-	const dangerCarEcharts = () => {
+	const dangerCarEcharts = async () => {
+		
 	  let chartData = {
-	    data: [100, 200, 0, 150, 180],
-	    yData: ['xxx服务区', 'xxx服务区', 'xxx服务区', 'xxx服务区', 'xxx服务区'],
+	    data: [],
+	    yData: [],
 	    xData: [],
 	  }
+	  
+	  //危化品车辆排名
+	  let res = await getServiceRanking(dangerCar);
+	  res.data.records.forEach(item=>{
+		  chartData.data.push(item.carNum);
+		  chartData.yData.push(item.itemName);
+	  })
+	  
 	  nextTick(() => {
 	    if (!dangerCarChart) {
 	      dangerCarChart = echarts.init(dangerCarRef.value);
-	      let option = getRowBarOption(chartData, {
-	        barColor: [
-	          { offset: 0, color: "#652B06" },
-	          { offset: 1, color: "#F89E46" },
-	        ]
-	      })
-	      dangerCarChart && dangerCarChart.setOption(option);
 	    }
+		let option = getRowBarOption(chartData, {
+		  barColor: [
+		    { offset: 0, color: "#652B06" },
+		    { offset: 1, color: "#F89E46" },
+		  ]
+		})
+		dangerCarChart && dangerCarChart.setOption(option);
 	  })
 	};
 	dangerCarEcharts()
@@ -270,12 +389,21 @@ const {
 	//危化品车辆分布
 	let dangerCarNetChart = null
 	let dangerCarNetRef = ref('');
-	const dangerCarNetEcharts = () => {
+	const dangerCarNetEcharts =  async () => {
 	  let chartData = {
-	    data: [100, 200, 1, 150, 180],
+	    data: [],
 	    yData: [],
-	    xData: ['xxx服务区', 'xxx服务区', 'xxx服务区', 'xxx服务区', 'xxx服务区'],
+	    xData: [],
 	  }
+	  
+	  //危化品车辆分布
+	  let res = await getServiceCarDis();
+	  res.data.records.forEach(item=>{
+		  chartData.data.push(item.dangerNum);
+		  chartData.xData.push(item.dangerItemName);
+	  })
+	  
+	  
 	  nextTick(() => {
 	    if (!dangerCarNetChart) {
 	      dangerCarNetChart = echarts.init(dangerCarNetRef.value);
@@ -295,32 +423,39 @@ const {
 	/* 司机之家使用率排名: carUseRanking */
 	const carUse = reactive({
 	  selectTimeType: "0",
-	  dateRange: [],
+	  queryStart: '',
+	  queryEnd: '',
 	});
 	function handleSelectCarUseRanking(payload) {
 	  carUse.selectTimeType = payload.code;
 	  if (payload.code === "6") {
-	    carUse.dateRange = payload.dateRange || [];
+	    let timeRunge = payload.dateRange || [];
+		if(timeRunge[0]){
+			carUse.queryStart=timeRunge[0];
+		}
+		if(timeRunge[1]){
+			carUse.queryEnd=timeRunge[1];
+		}
+	  }else{
+		  carUse.queryStart=''
+		  carUse.queryEnd=''
 	  }
-	  // chargingRankingEcharts(payload);
+	  getCarUseData();
 	}
 
 	const carUseData = ref([]);
 	const carUseColumns = [
-	  { label: "排名", prop: "serviceAreaName" },
-	  { label: "服务区名称", prop: "exPassengerNumber" },
-	  { label: "使用率", prop: "exTruckNumber" },
+	  { label: "排名", prop: "serviceAreaId" },
+	  { label: "服务区名称", prop: "serviceAreaName" },
+	  { label: "使用率", prop: "usedRate" },
 	];
-
-	let arr=[];
-	for(let i=0;i<8;i++){
-		arr.push({
-			serviceAreaName:'TOP'+i,
-			exPassengerNumber:'xxx服务区',
-			exTruckNumber:'7.25'
+	
+	const getCarUseData=()=>{
+		getTruckHomeList(carUse).then(res=>{
+			carUseData.value=res.data.records
 		})
 	}
-	carUseData.value=arr;
+	getCarUseData();
 
 
 
@@ -328,21 +463,18 @@ const {
 
 	const eventInformationData = ref([]);
 	const eventInformationDataColumns = [
-	  { label: "事件名称", prop: "serviceAreaName" },
-	  { label: "服务区", prop: "exPassengerNumber" },
-	  { label: "时间", prop: "exTruckNumber" },
+	  { label: "事件名称", prop: "eventType" },
+	  { label: "服务区", prop: "serviceAreaName" },
+	  { label: "时间", prop: "reportTime" },
 	];
-
-	let arr1=[];
-	for(let i=0;i<10;i++){
-		arr1.push({
-			serviceAreaName:'TOP'+i,
-			exPassengerNumber:'xxx服务区',
-			exTruckNumber:'2025-10-10 15:00:12'
+	
+	const getEventDataList=()=>{
+		getEventList().then(res=>{
+			eventInformationData.value=res.data.records
 		})
 	}
-	eventInformationData.value=arr1;
-
+	getEventDataList();
+	
 	//服务区筛选数据
 	let searchRef = ref('');
 	const openSearchALert=()=>{
@@ -357,85 +489,76 @@ const {
 		field:'star',
 		children:[
 			{
-				id:1,
-				title:'5级'
+				value:'三星级',
+				label:'3级'
 			},
 			{
-				id:2,
-				title:'4级'
+				value:'四星级',
+				label:'4级'
 			},
 			{
-				id:3,
-				title:'3级'
+				value:'五星级',
+				label:'5级'
 			},
 			{
-				id:4,
-				title:'达标'
+				value:'达标',
+				label:'达标'
 			}
 		]
 	})
+	
+	//路线
+	const getLineDataList=async ()=>{
+		let res=await getRoadLineList()
+		
+		areaArr.push({
+			title:'路线',
+			field:'highSpeed',
+			children:res.data.records
+		})
+	}
+	getLineDataList();
 
-	areaArr.push({
-		title:'路线',
-		field:'route',
-		children:[
-			{
-				id:1,
-				title:'G75兰海高速'
-			},
-			{
-				id:2,
-				title:'G75兰海高速级'
-			},
-			{
-				id:3,
-				title:'G75兰海高速级'
-			},
-			{
-				id:4,
-				title:'G75兰海高速'
-			}
-		]
-	})
+	
 
 	areaArr.push({
 		title:'服务区状态',
 		field:'status',
 		children:[
 			{
-				id:1,
-				title:'在建'
+				value:3,
+				label:'在建'
 			},
 			{
-				id:2,
-				title:'建成运营'
+				value:1,
+				label:'建成运营'
 			},
 			{
-				id:3,
-				title:'建成未运营'
+				value:2,
+				label:'建成未运营'
 			},
 			{
-				id:4,
-				title:'关闭'
+				value:4,
+				label:'关闭'
 			}
 		]
 	})
-
+	
 	areaArr.push({
 		title:'其他',
 		field:'other',
 		children:[
 			{
-				id:1,
-				title:'司机之家'
+				value:1,
+				label:'司机之家'
 			},
 			{
-				id:2,
-				title:'特色服务区'
+				value:2,
+				label:'特色服务区'
 			},
 			{
-				id:3,
-				title:'同心驿站'
+				value:3,
+				label:'同心驿站'
 			}
 		]
 	})
@@ -443,7 +566,39 @@ const {
 
 	//搜索回调
 	const chooseSearch=(res)=>{
-		console.log(res)
+		
+		console.log(res.highSpeed)
+		
+		if(res.highSpeed){
+			serviceParams.highSpeed=res.highSpeed.join(',')
+		}
+		if(res.star){
+			serviceParams.star=res.star.join(',')
+		}
+		if(res.status){
+			serviceParams.status=res.status.join(',')
+		}
+	
+		serviceParams.specService=''
+		serviceParams.truckHome=''
+		serviceParams.station=''
+		
+		if(res.other){
+			res.other.forEach(item=>{
+				if(item==1){
+					serviceParams.truckHome=1
+				}
+				if(item==2){
+					serviceParams.specService=1
+				}
+				if(item==3){
+					serviceParams.station=1
+				}
+			})
+		}
+		
+		
+		getServiceListData();
 	}
 
 </script>
@@ -708,7 +863,7 @@ const {
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
-
+			
 			.input{
 				height: 41px;
 				width: 143px;
@@ -718,6 +873,7 @@ const {
 				color: #fff;
 				background: transparent;
 				border: 0;
+				outline:none;
 
 				&::placeholder{
 					color: #FFF;

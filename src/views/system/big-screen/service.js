@@ -53,6 +53,59 @@ const getRowBarOption = (data,config) => {
       },
       //data:[]
     },
+	dataZoom: [
+	    {
+	        // 设置滚动条的隐藏或显示
+	        show: true,
+	        // 设置类型
+	        type: "slider",
+	        // 设置背景颜色
+	        backgroundColor: "rgb(19, 63, 100)",
+	        // 设置选中范围的填充颜色
+	        fillerColor: "rgb(16, 171, 198)",
+	        // 设置边框颜色
+	        borderColor: "rgb(19, 63, 100)",
+	        // 是否显示detail，即拖拽时候显示详细数值信息
+	        showDetail: false,
+	        // 数据窗口范围的起始数值
+	        startValue: 0,
+	        // 数据窗口范围的结束数值（一页显示多少条数据）
+	        endValue: 5,
+	        // 控制哪个轴，如果是number表示控制一个轴，
+	        // 如果是Array表示控制多个轴。此处控制第二根轴
+	        yAxisIndex: [0, 1],
+	        // empty：当前数据窗口外的数据，被设置为空。
+	        // 即不会影响其他轴的数据范围
+	        filterMode: "empty",
+	        // 滚动条高度
+	        width: 8,
+	        // 滚动条显示位置
+	        height: "80%",
+	        // 距离右边
+	        right: 3,
+	        // 控制手柄的尺寸
+	        handleSize: 0,
+	        // 是否锁定选择区域（或叫做数据窗口）的大小
+	        zoomLoxk: true,
+	        // 组件离容器上侧的距离
+	        // 如果top的值为'top', 'middle', 'bottom'，组件会根据相应的位置自动对齐
+	        top: "middle",
+	    },
+	    {
+	        // 没有下面这块的话，只能拖动滚动条，
+	        // 鼠标滚轮在区域内不能控制外部滚动条
+	        type: "inside",
+	        // 控制哪个轴，如果是number表示控制一个轴，
+	        // 如果是Array表示控制多个轴。此处控制第二根轴
+	        yAxisIndex: [0, 1],
+	        // 滚轮是否触发缩放
+	        zoomOnMouseWheel: false,
+	        // 鼠标移动能否触发平移
+	        moveOnMouseMove: true,
+	        // 鼠标滚轮能否触发平移
+	        moveOnMouseWheel: true,
+	    },
+	],
     series: [
       {
         type: "bar",
@@ -313,12 +366,11 @@ const getPie3D = (pieData, internalDiameterRatio) => {
   return option;
 };
 const getLineChartOption = (data, config) => {
-  console.log(data)
   var fontColor = "#30eee9";
   let option = {
     grid: {
-      top: "0",
-      bottom: "0",
+      top: "10",
+      bottom: "20",
       containLabel: true,
     },
     tooltip: {
@@ -329,7 +381,6 @@ const getLineChartOption = (data, config) => {
       show: true,
       x: "center",
       top:'0',
-      icon: "stack",
       itemWidth: 10,
       itemHeight: 10,
       textStyle: {
@@ -365,32 +416,6 @@ const getLineChartOption = (data, config) => {
     yAxis: [
       {
         type: "value",
-        name: "信息量",
-        min: 0,
-        max: 1000,
-        axisLabel: {
-          formatter: "{value}",
-          textStyle: {
-            color: "#2ad1d2",
-          },
-        },
-        axisLine: {
-          lineStyle: {
-            color: "#27b4c2",
-          },
-        },
-        axisTick: {
-          show: false,
-        },
-        splitLine: {
-          show: true,
-          lineStyle: {
-            color: "#11366e",
-          },
-        },
-      },
-      {
-        type: "value",
         name: "车流量",
         min: 0,
         // max: 1000,
@@ -421,7 +446,6 @@ const getLineChartOption = (data, config) => {
         smooth: true, //是否平滑
         name: "总车流量",
         type: "line",
-        stack: "总量",
         symbol: "circle",
         symbolSize: 8,
         itemStyle: {
@@ -459,7 +483,6 @@ const getLineChartOption = (data, config) => {
         smooth: true, //是否平滑,
         name: "新能源车",
         type: "line",
-        stack: "总量",
         symbol: "circle",
         symbolSize: 8,
 
@@ -491,7 +514,6 @@ const getLineChartOption = (data, config) => {
         smooth: true, //是否平滑
         name: "货车",
         type: "line",
-        stack: "总量",
         symbol: "circle",
         symbolSize: 8,
         itemStyle: {
@@ -522,7 +544,6 @@ const getLineChartOption = (data, config) => {
         smooth: true, //是否平滑
         name: "客车",
         type: "line",
-        stack: "总量",
         symbol: "circle",
         symbolSize: 8,
         itemStyle: {
@@ -553,7 +574,6 @@ const getLineChartOption = (data, config) => {
         smooth: true, //是否平滑
         name: "危化品车",
         type: "line",
-        stack: "总量",
         symbol: "circle",
         symbolSize: 8,
         itemStyle: {
@@ -613,18 +633,18 @@ const handleWheel = (event, data, barColor, chartInstance, key) => {
   chartInstance.setOption(options);
 };
 const getRadar = (data, config) => {
+  console.log(data)
+  let max = Math.max(...(data.map(x=>x.value)))
   let option = {
     color: ["#67F9D8", "#FFE434", "#56A3F1", "#FF917C"],
     radar: [
       {
-        indicator: [
-          { text: "Indicator1", max: 150 },
-          { text: "Indicator2", max: 150 },
-          { text: "Indicator3", max: 150 },
-          { text: "Indicator4", max: 120 },
-          { text: "Indicator5", max: 108 },
-          { text: "Indicator6", max: 72 },
-        ],
+        indicator: data.map(x=>{
+          return {
+            text:x.name,
+            max:max
+          }
+        }),
         center: ['50%', '35%'],
         radius: 80,
         axisName: {
@@ -641,7 +661,7 @@ const getRadar = (data, config) => {
         radarIndex: 0,
         data: [
           {
-            value: [120, 118, 130, 100, 99, 70],
+            value: data.map(x=>x.value),
             name: "Data C",
             symbolSize: 5,
             label: {
@@ -664,7 +684,7 @@ const getRadar = (data, config) => {
             },
           },
           {
-            value: [100, 93, 50, 90, 70, 60],
+            value: data.map(x=>x.value),
             name: "Data D",
             areaStyle: {
               color: new echarts.graphic.RadialGradient(0.1, 0.6, 1, [

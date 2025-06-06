@@ -12,11 +12,11 @@
 				<div class="item-tit">{{item.title}}：</div>
 				<div class="item-checkbox">
 					<el-checkbox-group v-model="backFormData[item?.field]">
-					  <el-checkbox v-for="(c, index) in item.children" :label="c.id" :key="index" class="image-checkbox">
+					  <el-checkbox v-for="(c, index) in item.children" :label="c.value" :key="index" class="image-checkbox">
 							  <div class="diy-box">
 								  <img src="../../images/manage/checkbox_off.png" class="off" />
 									<img src="../../images/manage/checkbox_on.png" class="on" />
-								  {{c.title}}
+								  {{c.label}}
 							  </div>
 					  </el-checkbox>
 					</el-checkbox-group>

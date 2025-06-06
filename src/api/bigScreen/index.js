@@ -3,11 +3,16 @@
  * @version: 
  * @Author: ysl
  * @Date: 2025-05-29 11:23:19
+<<<<<<< HEAD
  * @LastEditors: ysl
- * @LastEditTime: 2025-06-04 17:10:28
+ * @LastEditTime: 2025-06-05 16:00:08
+=======
+ * @LastEditors: lkr
+ * @LastEditTime: 2025-06-05 17:18:43
+>>>>>>> 8827d5287fba2374fc780e2fee457c1b157dfaf2
  */
 import { http } from "mam-base-ui";
-import { doPost } from '@/utils/requestUtils'
+import { doPost, doGet } from '@/utils/requestUtils'
 
 // 查询服务区排名前10
 export function getSmartEnergyLocation(data) {
@@ -86,3 +91,36 @@ export function getSmartEnergyGF(data) {
     const url = "/bigScreen/SmartEnergyController/getSmartEnergyGF";
     return doPost(url, data);
 }
+
+//智慧服务-客流量排名
+
+export function getTotalPeopleInfoBySa(data) {
+    const url = "/bigScreen/smartSaScreen/getTotalPeopleInfoBySa";
+    return doPost(url, data);
+}
+//智慧服务-客流量年龄分析
+export function getTotalPeopleInfoByAge(data) {
+    const url = "/bigScreen/smartSaScreen/getTotalPeopleInfoByAge";
+    return doPost(url, data);
+}
+//智慧服务-车流量排名
+export function getTotalCardInfoBySa(data) {
+    const url = "/bigScreen/smartSaScreen/getTotalCardInfoBySa";
+    return doPost(url, data);
+}
+//智慧服务-车流量趋势
+export function getTotalCardInfoByTime(data) {
+    const url = "/bigScreen/smartSaScreen/getTotalCardInfoByTime";
+    return doPost(url, data);
+}
+//智慧服务-大屏指标
+export function getTotalIndex(data) {
+    const url = "/bigScreen/smartSaScreen/getTotalIndex";
+    return doPost(url, data);
+}
+//智慧服务-满意度
+export function getScreenInquireStat(data) {
+    const url = "/bigScreen/smartSaScreen/getScreenInquireStat";
+    return doPost(url, data);
+}
+

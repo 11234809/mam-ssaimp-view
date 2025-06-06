@@ -7,36 +7,55 @@
  			<div class="close" @click="isShowSearch=false"></div>
  		</div>
  		
-		<div class="box-centent">
+		<div class="box-centent" v-if="formData?.basicBean">
 			
 			<div class="top-box">
-				<div class="img"></div>
+				<img class="img" :src="formData.basicBean.files" alt="" />
 				<div class="box-right">
 					<div class="b-right-top">
-						<div class="tit">大观服务区(茂名方向)</div>
-						<div class="top-start">
+						<div class="tit">{{formData.basicBean.name}}</div>
+						<div class="top-start" v-if="formData.basicBean.star=='三星级' ">
+							<div class="item"></div>
+							<div class="item"></div>
+							<div class="item"></div>
+						</div>
+						<div class="top-start" v-if="formData.basicBean.star=='四星级' ">
+							<div class="item"></div>
+							<div class="item"></div>
+							<div class="item"></div>
+							<div class="item"></div>
+						</div>
+						<div class="top-start" v-if="formData.basicBean.star=='五星级' ">
 							<div class="item"></div>
 							<div class="item"></div>
 							<div class="item"></div>
 							<div class="item"></div>
 						</div>
 						<div class="top-phone">
-							<span>建成运营</span>
+							<span v-if="formData.basicBean.status==1">建成运营</span>
+							<span v-if="formData.basicBean.status==2">建成未运营</span>
+							<span v-if="formData.basicBean.status==3">在建</span>
+							<span v-if="formData.basicBean.status==4">关闭</span>
 							<img class="phone-img" src="../../images/manage/phone.png" alt="" />
-							<span>023-23456589</span>
+							<span>{{formData.basicBean.consultationTel}}</span>
 						</div>
 					</div>
 					
+					
 					<div class="b-right-top">
-						<span class="top-lable">G65沪蓉高速</span>
-						<span class="top-lable">收费站：重庆大观站至——重庆南川站</span>
-						<span class="top-lable">特色服务区</span>
-						<span class="top-lable">占地面积（m2）：83065</span>
+						<span class="top-lable">{{highSpeedName}}</span>
+						<span class="top-lable">收费站：{{formData.basicBean.startTollStation}}-{{formData.basicBean.endTollStation}}</span>
+						<!-- <span class="top-lable">收费站：{{formData.basicBean.directionName}}</span> -->
+						<div class="top-lable">
+							<span v-if="formData.basicBean.isTruckHome==1">司机之家</span>
+							<span style="margin-left: 10px;" v-if="formData.driverHouseBean.isStation">同心驿站</span>
+							<span style="margin-left: 10px;" v-if="formData.basicBean.isSpecService">特色服务区</span>
+						</div>
+						<span class="top-lable">占地面积（m2）：{{formData.areaBean.buildArea}}</span>
 					</div>
 					
 					<div class="right-desc">
-						G42沪蓉高速奉节服务区位于重庆市奉节县,距重庆主城316KM，距离奉节城区16KM，服务区设有分离式东、西两区，于2010年投入运营。
-						服务区总占地面积120亩，有效用地面积60亩，建筑面积32808㎡。是集餐饮、购物、休闲、娱乐、旅游、加油等服务为一体的综合商业体。
+						{{formData.basicBean.brief}}
 					</div>
 					
 					<div class="right-tab">
@@ -51,53 +70,11 @@
 				<div class="item-box">
 					<div class="service-public-title">停车位</div>
 					<div class="service-box">
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
+						<div class="box-item" v-for="(item,index) in carList">
+							<el-progress type="circle" :percentage="item.percentage" stroke-width="5" width="50" color="#1DA7C0" />
 							<div class="txt-box">
-								<div class="txt">大货车停车位</div>
-								<div class="num">32</div>
-							</div>
-						</div>
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
-							<div class="txt-box">
-								<div class="txt">大客车停车位</div>
-								<div class="num">32</div>
-							</div>
-						</div>
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
-							<div class="txt-box">
-								<div class="txt">小车位</div>
-								<div class="num">32</div>
-							</div>
-						</div>
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
-							<div class="txt-box">
-								<div class="txt">危化品车位</div>
-								<div class="num">32</div>
-							</div>
-						</div>
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
-							<div class="txt-box">
-								<div class="txt">牲畜停车位</div>
-								<div class="num">32</div>
-							</div>
-						</div>
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
-							<div class="txt-box">
-								<div class="txt">无障碍停车位</div>
-								<div class="num">32</div>
-							</div>
-						</div>
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
-							<div class="txt-box">
-								<div class="txt">女性专用车位</div>
-								<div class="num">32</div>
+								<div class="txt">{{item.title}}</div>
+								<div class="num">{{item.num}}</div>
 							</div>
 						</div>
 					</div>
@@ -105,53 +82,11 @@
 				<div class="item-box">
 					<div class="service-public-title">卫生间</div>
 					<div class="service-box">
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
+						<div class="box-item" v-for="(item,index) in toiletList" :key="index">
+							<el-progress type="circle" :percentage="item.percentage" stroke-width="5" width="50" color="#1DA7C0" />
 							<div class="txt-box">
-								<div class="txt">第三卫生间</div>
-								<div class="num">32</div>
-							</div>
-						</div>
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
-							<div class="txt-box">
-								<div class="txt">无障碍卫生间</div>
-								<div class="num">32</div>
-							</div>
-						</div>
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
-							<div class="txt-box">
-								<div class="txt">男厕蹲位</div>
-								<div class="num">32</div>
-							</div>
-						</div>
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
-							<div class="txt-box">
-								<div class="txt">男厕小便器</div>
-								<div class="num">32</div>
-							</div>
-						</div>
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
-							<div class="txt-box">
-								<div class="txt">男厕坐便</div>
-								<div class="num">32</div>
-							</div>
-						</div>
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
-							<div class="txt-box">
-								<div class="txt">女厕蹲位</div>
-								<div class="num">32</div>
-							</div>
-						</div>
-						<div class="box-item">
-							<el-progress type="circle" :percentage="25" stroke-width="5" width="50" color="#1DA7C0" />
-							<div class="txt-box">
-								<div class="txt">女厕坐便器</div>
-								<div class="num">32</div>
+								<div class="txt">{{item.title}}</div>
+								<div class="num">{{item.num}}</div>
 							</div>
 						</div>
 					</div>
@@ -425,6 +360,7 @@
 
 <script setup>
 import { ref, onMounted, defineProps, defineEmits,defineExpose,reactive } from 'vue'
+import { getServiceInfo,getRoadLineList } from "@/api/bigScreen/management.js";
 import Swiper from "swiper"
 import { Pagination,Navigation } from "swiper/modules" // 导入分页模块
 import { Autoplay } from "swiper/modules" // 导入自动滚动模块
@@ -434,20 +370,168 @@ import 'swiper/css/navigation'
 import "swiper/css/pagination"
 
 const props = defineProps({
-  fromData: {
-    type: Array,
+  id: {
+    type: Number,
     required: true
   }
 })
 
-const backFormData = ref({});
+const formData = ref({});
 
 
 const isShowSearch=ref(false)
 
-const open=()=>{
-	isShowSearch.value=true;
+const highSpeedName=ref('')
+
+
+//路线
+const getLineDataList=async (data)=>{
+	let res=await getRoadLineList()
+	
+	console.log(res)
+	
+	res.data.records.forEach(item=>{
+		if(data.basicBean.highSpeed==item.value){
+			highSpeedName.value=item.label
+		}
+	})
 }
+
+//卫生间 比列计算
+const toiletList = ref([]);
+const toiletCount=(data)=>{
+	let toiletData=data.toiletBean;
+	
+	//总数
+	let count=
+	toiletData.thirdToiletNum+
+	toiletData.thirdSeatNum+
+	toiletData.mobileToiletSquatNum+
+	toiletData.manHoleNum+
+	toiletData.manUrinalNum+
+	toiletData.manSeatThenNum+
+	toiletData.womanHoleNum+
+	toiletData.womanSeatThenNum;
+	
+	toiletList.value=[]
+	
+	toiletList.value.push({
+		title:'第三卫生间',
+		num:toiletData.thirdToiletNum+toiletData.thirdSeatNum,
+		percentage:((toiletData.thirdToiletNum+toiletData.thirdSeatNum)/count*100).toFixed(1),
+	});
+	toiletList.value.push({
+		title:'无障碍卫生间',
+		num:toiletData.mobileToiletSquatNum,
+		percentage:(toiletData.mobileToiletSquatNum/count*100).toFixed(1),
+	});
+	toiletList.value.push({
+		title:'男厕蹲位',
+		num:toiletData.manHoleNum,
+		percentage:(toiletData.manHoleNum/count*100).toFixed(1),
+	});
+	toiletList.value.push({
+		title:'男厕小便器',
+		num:toiletData.manUrinalNum,
+		percentage:(toiletData.manUrinalNum/count*100).toFixed(1),
+	});
+	toiletList.value.push({
+		title:'男厕坐便',
+		num:toiletData.manSeatThenNum,
+		percentage:(toiletData.manSeatThenNum/count*100).toFixed(1),
+	});
+	toiletList.value.push({
+		title:'女厕蹲位',
+		num:toiletData.womanHoleNum,
+		percentage:(toiletData.womanHoleNum/count*100).toFixed(1),
+	});
+	toiletList.value.push({
+		title:'女厕坐便器',
+		num:toiletData.womanSeatThenNum,
+		percentage:(toiletData.womanSeatThenNum/count*100).toFixed(1),
+	});
+}
+
+//停车位 比列计算
+const carList = ref([]);
+const carCount=(data)=>{
+	let carData=data.carBean;
+	
+	//总数
+	let count=
+	carData.smallCars+
+	carData.largeTruck+
+	carData.buses+
+	carData.dangerousGoodsCarrier+
+	carData.livestockTruck+
+	carData.barrierFreeCar+
+	carData.femaleCar+
+	carData.electricCar+
+	carData.limo
+	
+	
+	
+	carList.value=[]
+	
+	carList.value.push({
+		title:'大货车停车位',
+		num:carData.largeTruck,
+		percentage:((carData.largeTruck)/count*100).toFixed(1),
+	});
+	carList.value.push({
+		title:'大客车停车位',
+		num:carData.buses,
+		percentage:(carData.buses/count*100).toFixed(1),
+	});
+	carList.value.push({
+		title:'小车位',
+		num:carData.smallCars+carData.limo,
+		percentage:((carData.smallCars+carData.limo)/count*100).toFixed(1),
+	});
+	carList.value.push({
+		title:'危化品车位',
+		num:carData.dangerousGoodsCarrier,
+		percentage:(carData.dangerousGoodsCarrier/count*100).toFixed(1),
+	});
+	carList.value.push({
+		title:'牲畜停车位',
+		num:carData.livestockTruck,
+		percentage:(carData.livestockTruck/count*100).toFixed(1),
+	});
+	carList.value.push({
+		title:'无障碍停车位',
+		num:carData.barrierFreeCar,
+		percentage:(carData.barrierFreeCar/count*100).toFixed(1),
+	});
+	carList.value.push({
+		title:'女性专用车位',
+		num:carData.femaleCar,
+		percentage:(carData.femaleCar/count*100).toFixed(1),
+	});
+	carList.value.push({
+		title:'充电车位',
+		num:carData.electricCar ,
+		percentage:(carData.electricCar /count*100).toFixed(1),
+	});
+}
+
+
+const open=()=>{
+	
+	getServiceInfo({id:props.id}).then(res=>{
+	// getServiceInfo({id:206}).then(res=>{
+		console.log(res)
+		formData.value=res.data;
+		
+		getLineDataList(res.data);
+		toiletCount(res.data);
+		carCount(res.data);
+		
+		isShowSearch.value=true;
+	})
+	
+}
+// open();
 
 const close=()=>{
 	isShowSearch.value=false;
@@ -491,6 +575,11 @@ const mySwiperFn = () => {
 onMounted(() => {
   mySwiperFn()
 })
+
+defineExpose({
+  open,
+  close,
+});
 </script>
 
 <style lang="less" scoped>
@@ -501,7 +590,7 @@ onMounted(() => {
 		position: fixed;
 		top: 50%;
 		left: 50%;
-		z-index: 888;
+		z-index: 9999;
 		display: flex;
 		justify-content: center;
 		margin-left: -690px;
@@ -611,6 +700,8 @@ onMounted(() => {
 							font-size: 14px;
 							color: #ECF4FF;
 							line-height: 20px;
+							overflow-y: auto;
+							overflow-x: hidden;
 						}
 						
 						.right-tab{
@@ -662,7 +753,7 @@ onMounted(() => {
 									color: #50E0FF;
 									
 									span{
-										font-size: 14px
+										font-size: 12px
 									}
 								}
 								

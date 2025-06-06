@@ -4,7 +4,7 @@
  * @Author: lkr
  * @Date: 2025-05-28 15:55:53
  * @LastEditors: lkr
- * @LastEditTime: 2025-06-05 09:02:04
+ * @LastEditTime: 2025-06-05 18:51:42
 -->
 <template>
   <keep-alive>
@@ -14,7 +14,7 @@
         <div class="smart-service-left-item">
           <div class="item-top">客流量排名</div>
           <div class="time-selector">
-            <TimeTypeSelector v-model="timeSelector.perRankTimeType" @select="handleSelectInformation" />
+            <TimeTypeSelector v-model="timeSelector.perRankTimeType" @select="(payload) => handleSelect(payload, 'perRank')" />
           </div>
           <div class="item-bottom">
             <div ref="footfallRankingRef" style="width: 90%; height: 30vh"></div>
@@ -24,7 +24,7 @@
         <div class="smart-service-left-item">
           <div class="item-top">客流量年龄分析</div>
           <div class="time-selector">
-            <TimeTypeSelector v-model="timeSelector.perAgeTimeType" @select="handleSelectChargingRanking" />
+            <TimeTypeSelector v-model="timeSelector.perAgeTimeType" @select="(payload) => handleSelect(payload, 'age')" />
           </div>
           <div class="item-bottom">
             <div ref="PassengerFlow_age_echarts" style="width: 100%; height: 30vh"></div>
@@ -33,7 +33,7 @@
         <div class="smart-service-left-item">
           <div class="item-top">满意度评价</div>
           <div class="time-selector">
-            <TimeTypeSelector v-model="timeSelector.satisfyTimeType" @select="handleSelectChargingRanking" />
+            <SatisfyTab v-model="timeSelector.satisfyTimeType" @select="(payload) => handleSelect(payload, 'satisfy')" />
           </div>
           <div class="item-bottom">
             <div ref="satisfy_echartsRef" style="width: 100%; height: 30vh"></div>
@@ -50,19 +50,29 @@
           </div>
         </div>
         <div style="padding: 10px;">
-          <el-button style="width: 100px;background: transparent;border-radius: 2px;border: 1px #5BC7FC dashed;">服务区筛选</el-button>
+          <div class="search-box">
+            <div class="area-btn" @click="openSearchALert">
+						服务区筛选
+					</div>
+					
+					<div class="search-input-box">
+						<input type="text" class="input" placeholder="服务区搜索" />
+						<div class="box-btn"></div>
+					</div>
+				</div>
+          <!-- <el-button style="width: 100px;background: transparent;border-radius: 2px;border: 1px #5BC7FC dashed;">服务区筛选</el-button>
           <el-input v-model="input1" style="width: 278px;border-radius: 2px; margin-left: 10px ;border: 1px #5BC7FC dashed;"
-            placeholder="服务区搜索" suffix-icon="Search" />
+            placeholder="服务区搜索" suffix-icon="Search" /> -->
         </div>
         <div style="height: 75vh;">
-          <Map @markerClick="markerClick" />
+          <CQMap @markerClick="markerClick" />
         </div>
       </div>
       <div class="smart-service-right">
         <div class="smart-service-right-item">
           <div class="item-top">车流量排名</div>
           <div class="time-selector">
-            <TimeTypeSelector v-model="timeSelector.carRankTimeType" @select="handleSelectComeOn" />
+            <TimeTypeSelector v-model="timeSelector.carRankTimeType" @select="(payload) => handleSelect(payload, 'sacarRanktisfy')" />
           </div>
           <div class="item-bottom">
             <div ref="carfallRankingRef" style="width: 90%; height: 30vh"></div>
@@ -70,21 +80,22 @@
         </div>
         <div class="smart-service-right-item">
           <div class="item-top">近七日车流量趋势</div>
-          <div class="time-selector" style="">
-            <el-date-picker v-model="timeSelector.car7dayTimeRange" type="datetimerange" start-placeholder="开始时间" end-placeholder="结束时间"
+          <div class="time-selector" style="margin: auto;">
+            <el-date-picker v-model="timeSelector.car7dayTimeRange" type="daterange" start-placeholder="开始时间" end-placeholder="结束时间"
               :default-time="defaultTime1" popper-class="custom-date-range" :picker-options="pickerOptions"
-              :style="{ background: 'transparent', border: '1px solid #fff', color: '#ff0000'}" @change="validateDateRange" />
+              :style="{ background: 'transparent', border: '1px solid #fff'}" @change="handleSelect(_, '7day')"/>
           </div>
           <div ref="carfallTrendRef" style="width: 100%; height: 30vh"></div>
         </div>
         <div class="smart-service-right-item">
           <div class="item-top">新能源车排名</div>
           <div class="time-selector">
-            <TimeTypeSelector v-model="timeSelector.newEnergyTrafficTimeType" @select="handleSelectComeOn" />
+            <TimeTypeSelector v-model="timeSelector.newEnergyTrafficTimeType"  @select="(payload) => handleSelect(payload, 'newEnergyPer')"/>
           </div>
           <div ref="enerenergyRef" style="width: 100%; height: 30vh"></div>
         </div>
       </div>
+      <searchAlert ref='searchRef' :from-data="searchAreaArr" @ok="chooseSearch"></searchAlert>
     </div>
   </keep-alive>
 </template>
@@ -98,20 +109,27 @@ import {
   onBeforeUnmount,
   getCurrentInstance,
   nextTick,
+  computed,
 } from "vue";
 import ChongQingMap from "../map/index.vue";
 import TimeTypeSelector from "../time-type-selector/index.vue";
+import SatisfyTab from "./satisfy-tab/index.vue";
 import * as echarts from "echarts";
 import ScreenIconInfo from "../screen-icon-info/index.vue";
-import Map from '@/components/map/index.vue'
+import CQMap from '@/components/map/index.vue'
 import moment from "moment";
 import { bigScreen } from "@/store/bigScreen";
 import {
   getQueryPage,
 } from "@/api/guestFlow/index.js";
-import { queryPage } from "@/api/statisticalForm/dailyRecord.js";
 import { getRowBarOption, getPie3D, getLineChartOption, handleWheel,getRadar,get3DBarOption } from '../../service'
+import {
+  getTotalPeopleInfoBySa,getTotalPeopleInfoByAge,getTotalCardInfoBySa,getTotalCardInfoByTime,getTotalIndex,getScreenInquireStat
+} from "@/api/bigScreen/index.js";
+import searchAlert from '../service-search-alert/index';
+
 const { proxy } = getCurrentInstance();
+const store = bigScreen();
 const value1 = ref([]);
 const pickerOptions = {
   onPick(date) {
@@ -143,9 +161,12 @@ const timeSelector = reactive({
   perRankTimeType: '1',
   perAgeTimeType: '1',
   carRankTimeType: '0',
-  car7dayTimeRange: '',
-  satisfyTimeType:'',
-  newEnergyTrafficTimeType:''
+  car7dayTimeRange: [
+    new Date(new Date().getTime() - 6 * 24 * 3600 * 1000), // 开始时间为当前时间减去6天（因为包括今天）
+    new Date() // 结束时间为当前时间
+  ],
+  satisfyTimeType: '0',
+  newEnergyTrafficTimeType: ''
 })
 const validateDateRange = () => {
   if (!value1.value || value1.value.length !== 2) return;
@@ -156,6 +177,38 @@ const validateDateRange = () => {
   if (diffDays > 7) {
     alert('请选择不超过7天的时间范围');
     value1.value = [];
+  }
+};
+const defaultTime1 = ref([
+  new Date(new Date().getTime() - 6 * 24 * 3600 * 1000), // 开始时间为当前时间减去6天（因为包括今天）
+  new Date() // 结束时间为当前时间
+]);
+const handleSelect =async (payload,type) => {
+  console.log(type)
+  switch (type) {
+    case 'perRank':
+      await getPersonalData(payload)
+      getfootfallEcharts()
+      break;
+    case 'age':
+      await getPersonalAgeByTime(payload)
+      get3DpieChart()
+      break;
+    case 'satisfy':
+      await getSatisfyData()
+      getSatisfyEcharts()
+      break;
+    case 'carRank':
+      await getCarRankData(payload)
+      getcarfallEcharts()
+      break;
+    case '7day':
+      await getCar7dayData()
+      getLineChart()
+      break;
+    case 'newEnergyPer':
+      getEnerenergyEcharts(payload)
+      break;
   }
 };
 // 地图数据
@@ -200,50 +253,88 @@ let satisfy_echartsRef = ref('');
 let enerenergyRef = ref('')
 
 const PersonalData = ref([])
-const carFlowData = ref([])
-const getPersonalData = async () => {
+const PersonalAgeData = ref([])
+const carRankData = ref([])
+const car7dayData = ref([])
+const satisfyData = ref([])
+//获取客流量排名数据
+const getPersonalData = async (payload = {}) => {
   let params = {
-    selectTimeType: '5',
-    time: moment().subtract(0, "day").format("YYYY-MM-DD"),
-    order: 'desc'
+    selectTimeType: timeSelector.perRankTimeType,
+    timeList:payload.code=='6'&&payload.dateRange.length==2? payload.dateRange:null
   };
 
-  let res = await getQueryPage(params);
+  let res = await getTotalPeopleInfoBySa(params);
   if (res.code == 200) {
-    screenDataList.value[2].value = (res.data.records)[0].totalPassFlow
-    PersonalData.value = res.data.records.filter(x => x.companyName !== '全路网')
+    PersonalData.value = res.data.records
   }
 };
-const getCarFlowData = async () => {
+//获取客流量年龄分析数据
+const getPersonalAgeByTime = async (payload = {}) => { 
   let params = {
-    selectTimeType: '5',
-    time: moment().subtract(0, "day").format("YYYY-MM-DD"),
-    order: 'desc'
+    selectTimeType: timeSelector.perAgeTimeType,
+    timeList:payload.code=='6'&&payload.dateRange.length==2? payload.dateRange:null
+  };
+  let res = await getTotalPeopleInfoByAge(params);
+  if (res.code == 200) {
+    PersonalAgeData.value = res.data.records
+  }
+};
+//获取车流量排名
+const getCarRankData = async (payload = {}) => {
+  let params = {
+    selectTimeType: timeSelector.carRankTimeType,
+    timeList:payload.code=='6'&&payload.dateRange.length==2? payload.dateRange:null
   };
 
-  let res = await queryPage({
-    startDate: "2025-01-01",
-    endDate: "2025-12-31",
-    order: 'desc'
-  });
-  let chewei = 1000
+  let res = await getTotalCardInfoBySa(params);
   if (res.code == 200) {
-    screenDataList.value[0].value = (res.data.records)[0].carTraffic
-    // screenDataList.value[1].value = (((res.data.records)[0].carTraffic / chewei) * 100).toFixed(2) + '%'
-    screenDataList.value[1].value = ((res.data.records)[0].newEnergyTraffic / (res.data.records)[0].carTraffic * 100).toFixed(2) + '%'
-    carFlowData.value = res.data.records.filter(x => x.companyName !== '全路网合计')
+    carRankData.value = res.data.records
   }
 };
-const store = bigScreen();
+let Day7time = computed(()=>{
+  return (timeSelector.car7dayTimeRange).map(x=>moment(x).format('YYYY-MM-DD'))
+})
+//获取车流量7天
+const getCar7dayData = async () => {
+  let params = {
+    selectTimeType: '6',
+    queryStart: moment(timeSelector.car7dayTimeRange[0]).format('YYYY-MM-DD'),
+    queryEnd: moment(timeSelector.car7dayTimeRange[1]).format('YYYY-MM-DD'),
+    timeList:Day7time.value
+  };
+  let res = await getTotalCardInfoByTime(params);
+  if (res.code == 200) {
+    car7dayData.value = res.data.records
+  }
+};
+// 获取中间顶部信息数据
+const getTotalInfo = async () => {
+  let params = {
+    selectTimeType: '0',
+  };
+  let res = await getTotalIndex(params);
+  if (res.code == 200) {
+    screenDataList.value.find(x=>x.title == '车流量').value = res.data.records[0].carTraffic || 0
+    screenDataList.value.find(x=>x.title == '新能源车占比').value = res.data.records[0].newEnergyPer || 0
+    screenDataList.value.find(x=>x.title == '客流量').value = res.data.records[0].totalFlow || 0
+  }
+};
+//获取满意度评价数据
+const getSatisfyData = async () => {
+  let res = await getScreenInquireStat();
+  if (res.code == 200) {
+    satisfyData.value = res.data
+  }
+};
 const getfootfallEcharts = async () => {
   let chartData = reactive({});
-
+  console.log(PersonalData.value)
   nextTick(() => {
-    chartData.data = PersonalData.value.map(item => item.totalPassFlow);
-    chartData.yData = PersonalData.value.map(item => item.serviceAreaName);
-    if (!footFallChart) {
-      footFallChart = echarts.init(footfallRankingRef.value);
-    }
+    if(PersonalData.value.length>0){
+    chartData.data = PersonalData.value.map(item => item.totalFlow);
+    chartData.yData = PersonalData.value.map(item => item.serviceName);
+    footFallChart = echarts.init(footfallRankingRef.value);
 
     const barColor = [
       { offset: 0, color: "#0d488d" },
@@ -276,18 +367,18 @@ const getfootfallEcharts = async () => {
       }, 150);
     }
     );
+  }
   });
 };
 
 const getcarfallEcharts = () => {
   nextTick(() => {
-    if (!carFallChart) {
-      carFallChart = echarts.init(carfallRankingRef.value);
-    }
+
+    carFallChart = echarts.init(carfallRankingRef.value);
 
     const chartData = {
-      data: carFlowData.value.map(x => x.carTraffic) || [],
-      yData: carFlowData.value.map(x => x.serviceAreaName) || [],
+      data: carRankData.value.map(x => x.carTraffic) || [],
+      yData: carRankData.value.map(x => x.serviceName) || [],
     };
 
     const barColor = [
@@ -394,18 +485,18 @@ function getParametricEquation(startRatio, endRatio, isSelected, isHovered, k, h
     },
   };
 }
-const get3DpieChart = async () => {
+const get3DpieChart = () => {
   let obj = [
-    { key: 'kidNum', color: '#f77b66', name: '小孩' },
-    { key: 'adultNum', color: '#3edce0', name: '青年' },
-    { key: 'midNum', color: '#f94e76', name: '中年' },
-    { key: 'oldNum', color: '#018ef1', name: '老年' },
-    { key: 'otherNum', color: '#9e60f9', name: '其他' }
+    { key: 'ageChild', color: '#f77b66', name: '小孩' },
+    { key: 'ageYoung', color: '#3edce0', name: '青年' },
+    { key: 'ageMiddle', color: '#f94e76', name: '中年' },
+    { key: 'ageOld', color: '#018ef1', name: '老年' },
+    { key: 'ageOther', color: '#9e60f9', name: '其他' }
   ];
   let data = obj.map(item => {
     const name = item.name;
     const key = item.key;
-    const total = PersonalData.value.reduce((sum, entry) => sum + (entry[key] || 0), 0);
+    const total = PersonalAgeData.value.length > 0 && PersonalAgeData.value[0] && PersonalAgeData.value[0][key] ? PersonalAgeData.value[0][key]:0;
     return {
       name: name,
       value: total,
@@ -413,8 +504,7 @@ const get3DpieChart = async () => {
     };
   });
   nextTick(() => {
-    if (!pie3DChart)
-      pie3DChart = echarts.init(PassengerFlow_age_echarts.value);
+    pie3DChart = echarts.init(PassengerFlow_age_echarts.value);
     let option = getPie3D(data, 0.59)
     let hoveredIndex = ""
     //  修正取消高亮失败的 bug
@@ -437,7 +527,7 @@ const get3DpieChart = async () => {
         // 如果当前有高亮的扇形，取消其高亮状态（对 option 更新）
         if (hoveredIndex !== '') {
           // 从 option.series 中读取重新渲染扇形所需的参数，将是否高亮设置为 false。
-          isSelected = option.series[hoveredIndex].pieStatus.selected || false;
+          isSelected = false;
           isHovered = false;
           startRatio = option.series[hoveredIndex].pieData.startRatio;
           endRatio = option.series[hoveredIndex].pieData.endRatio;
@@ -461,7 +551,7 @@ const get3DpieChart = async () => {
         // 如果触发 mouseover 的扇形不是透明圆环，将其高亮（对 option 更新）
         if (params.seriesName !== 'mouseoutSeries') {
           // 从 option.series 中读取重新渲染扇形所需的参数，将是否高亮设置为 true。
-          isSelected = option.series[params.seriesIndex].pieStatus.selected;
+          isSelected = false;
           isHovered = true;
           startRatio = option.series[params.seriesIndex].pieData.startRatio;
           endRatio = option.series[params.seriesIndex].pieData.endRatio;
@@ -490,13 +580,13 @@ const get3DpieChart = async () => {
     pie3DChart.on('globalout', function () {
       if (hoveredIndex !== '') {
         // 从 option.series 中读取重新渲染扇形所需的参数，将是否高亮设置为 true。
-        isSelected = option.series[hoveredIndex].pieStatus.selected || false;
-        isHovered = false;
-        k = option.series[hoveredIndex].pieStatus.k;
-        startRatio = option.series[hoveredIndex].pieData.startRatio;
-        endRatio = option.series[hoveredIndex].pieData.endRatio;
+        let isSelected = true;
+        let isHovered = false;
+        let k = option.series[hoveredIndex].pieStatus.k;
+        let startRatio = option.series[hoveredIndex].pieData.startRatio;
+        let endRatio = option.series[hoveredIndex].pieData.endRatio;
         // 对当前点击的扇形，执行取消高亮操作（对 option 更新）
-        i = option.series[hoveredIndex].pieData.value === option.series[0].pieData.value ? 35 : 10;
+        let i = option.series[hoveredIndex].pieData.value === option.series[0].pieData.value ? 35 : 10;
         option.series[hoveredIndex].parametricEquation = getParametricEquation(
           startRatio,
           endRatio,
@@ -527,18 +617,33 @@ const get3DpieChart = async () => {
 };
 const getLineChart = () => {
   nextTick(() => {
-    if (!carfallTrendCahrt) {
-      carfallTrendCahrt = echarts.init(carfallTrendRef.value);
-      let data = {
-        seriesData: ['newEnergyTraffic', 'freightTraffic', 'guestTraffic', 'carTraffic', 'DangerousTraffic'].reduce((acc, key) => {
-          acc[key] = carFlowData.value.map(item => item[key] || 0);
-          return acc;
-        }, {}),
-        xAxis: ['2025-01-02', '2025-01-2', '2025-01-03', '2025-01-04', '2025-01-5', '2025-01-06', '2025-01-07'],
-      }
-      console.log(carFlowData.value)
-      let LineChartOption = getLineChartOption(data, {})
-      if (LineChartOption && typeof LineChartOption === 'object') {
+    carfallTrendCahrt = echarts.init(carfallTrendRef.value);
+    const startDate = moment(Day7time.value[0]);
+    const endDate = moment(Day7time.value[1]);
+
+    const dateArray = [];
+
+    let currentDate = startDate.clone();
+
+    while (currentDate.isSameOrBefore(endDate, 'day')) {
+      dateArray.push(currentDate.format('YYYY-MM-DD'));
+      currentDate.add(1, 'day');
+    }
+    const dateMap = new Map(car7dayData.value.map(item => [item.day, item]));
+    const fields = ['newEnergyTraffic', 'freightTraffic', 'passengerTraffic', 'carTraffic', 'dangerFreightTraffic'];
+
+    let data = {
+      seriesData: fields.reduce((acc, field) => {
+        acc[field] = dateArray.map(date => {
+          return dateMap.get(date)?.[field] || 0;
+        });
+        return acc;
+      }, {}),
+      xAxis: dateArray,
+    }
+    console.log(data)
+    let LineChartOption = getLineChartOption(data, {})
+    if (LineChartOption && typeof LineChartOption === 'object') {
         carfallTrendCahrt.setOption(LineChartOption);
         carfallTrendCahrt.on('click', (params) => {
           const data = { name: params.name, time: timeSelector.car7dayTimeRange };
@@ -549,19 +654,57 @@ const getLineChart = () => {
         });
       }
       window.addEventListener('resize', carfallTrendCahrt.resize);
-    }
 
   })
 };
 const getSatisfyEcharts = () => {
   nextTick(() =>{
-    if(!satisfy_echarts){
       satisfy_echarts = echarts.init(satisfy_echartsRef.value);
-      let option = getRadar([], { 
-      });
-      if (option && typeof option === 'object') {
-        satisfy_echarts.setOption(option);
-        satisfy_echarts.on('click', (params) => {
+      let arr = ['generalStat','cqxmStat','foodStat']
+    let obj = {
+      generalStat: {
+        basicRatio: '基础设施',
+        environRatio: '环境卫生',
+        serviceRatio: '文明服务',
+        safetyRatio: '道路安全',
+        parkingServiceRatio: '停车服务',
+        foodBeveragesRatio: '餐饮服务',
+        civilizedServiceRatio: '文明服务',
+        toiletServiceRatio: '如厕服务',
+        impressionRatio: '总体印象'
+      },
+      foodStat: {
+        qualityRatio: '饭口质量',
+        tasteRatio: '饭菜口味',
+        tablewareRatio: '饭菜餐具',
+        typeRatio: '饭菜种类',
+        quantityRatio: '饭菜份量',
+        speedRatio: '上菜速度',
+        environmentRatio: '就餐区环境',
+        hygieneRatio: '就餐区卫生情况',
+        attitudeRatio: '服务态度',
+        personalHygieneRatio: '个人卫生'
+      },
+      cqxmStat: {
+        odorRatio: '小面色泽',
+        aromaRatio: '小面香味',
+        xmTasteRatio: '小面味道',
+        finesseRatio: '小面劲道',
+        xmAttitudeRatio: '小面服务',
+        overallEvuationRatio: '小面总体',
+      }
+    }
+    let keys = Object.keys(obj[arr[timeSelector.satisfyTimeType]])
+    let data = keys.map(x => {
+      return {
+        name: obj[arr[timeSelector.satisfyTimeType]][x],
+        value: satisfyData.value[(arr[timeSelector.satisfyTimeType])][x]
+      }
+    })
+    let option = getRadar(data, {});
+    if (option && typeof option === 'object') {
+      satisfy_echarts.setOption(option);
+      satisfy_echarts.on('click', (params) => {
           const data = { name: params.name, time: timeSelector.satisfyTimeType };
           store.setData(data);
           proxy.$Bus.emit("jumpAgency", {
@@ -570,12 +713,10 @@ const getSatisfyEcharts = () => {
         });
       }
       window.addEventListener('resize', satisfy_echarts.resize);
-    }
   })
 };
 const getEnerenergyEcharts = () => {
   nextTick(() =>{
-    if(!enerenergyChart){
       enerenergyChart = echarts.init(enerenergyRef.value);
       let option = get3DBarOption([], { 
       });
@@ -590,7 +731,6 @@ const getEnerenergyEcharts = () => {
         });
       }
       window.addEventListener('resize', enerenergyChart.resize);
-    }
   })
 };
 // 切换日期时间
@@ -617,9 +757,13 @@ const jumpToPerFlowRank = (e) => {
 };
 onMounted(async () => {
   await getPersonalData()
-  await getCarFlowData()
-  await getfootfallEcharts()
-  await get3DpieChart()
+  await getPersonalAgeByTime()
+  await getCarRankData()
+  await getCar7dayData()
+  await getTotalInfo()
+  await getSatisfyData()
+  getfootfallEcharts()
+  get3DpieChart()
   getcarfallEcharts()
   getLineChart()
   getSatisfyEcharts()
@@ -667,12 +811,113 @@ const startScroll = (data, barColor, chartInstance, key) => {
 };
 
 
-onActivated(() => {
-});
+	//服务区筛选数据
+	let searchRef = ref('');
+	const openSearchALert=()=>{
+		searchRef.value.open();
+	}
+	const searchAreaArr=ref([]);
+	
+	let areaArr=[];
+	
+	areaArr.push({
+		title:'星级',
+		field:'star',
+		children:[
+			{
+				id:1,
+				title:'5级'
+			},
+			{
+				id:2,
+				title:'4级'
+			},
+			{
+				id:3,
+				title:'3级'
+			},
+			{
+				id:4,
+				title:'达标'
+			}
+		]
+	})
+	
+	areaArr.push({
+		title:'路线',
+		field:'route',
+		children:[
+			{
+				id:1,
+				title:'G75兰海高速'
+			},
+			{
+				id:2,
+				title:'G75兰海高速级'
+			},
+			{
+				id:3,
+				title:'G75兰海高速级'
+			},
+			{
+				id:4,
+				title:'G75兰海高速'
+			}
+		]
+	})
+	
+	areaArr.push({
+		title:'服务区状态',
+		field:'status',
+		children:[
+			{
+				id:1,
+				title:'在建'
+			},
+			{
+				id:2,
+				title:'建成运营'
+			},
+			{
+				id:3,
+				title:'建成未运营'
+			},
+			{
+				id:4,
+				title:'关闭'
+			}
+		]
+	})
+	
+	areaArr.push({
+		title:'其他',
+		field:'other',
+		children:[
+			{
+				id:1,
+				title:'司机之家'
+			},
+			{
+				id:2,
+				title:'特色服务区'
+			},
+			{
+				id:3,
+				title:'同心驿站'
+			}
+		]
+	})
+	searchAreaArr.value=areaArr;
+	
+	//搜索回调
+	const chooseSearch=(res)=>{
+		console.log(res)
+	}
+
 
 // 暴露给父组件
 </script>
-<style scoped>
+<style scoped lang="less">
 .smart-service {
   display: flex;
   height: calc(100% - 108px);
@@ -698,7 +943,7 @@ onActivated(() => {
   flex-direction: column;
   justify-content: space-between;
   height: 33.3vh;
-  background: url("../../images/组2398.png") no-repeat;
+  background: url("../../images/smartEnergy/组12398.png") no-repeat;
   background-position: center 0;
   position: relative;
 }
@@ -711,6 +956,9 @@ onActivated(() => {
   height: 69px !important;
   margin-top: 8px;
   margin-left: 6.75rem;
+  > .time-selector{
+    margin-top: 20px !important;
+  }
 }
 
 .item-bottom {
@@ -861,4 +1109,57 @@ onActivated(() => {
 .smart-service-center-header>div {
   color: #fff;
 }
+.search-box{
+		width: 100%;
+		height: 45px;
+		display: flex;
+		align-items: center;
+		margin-top: 26px;
+		
+		.area-btn{
+			width: 114px;
+			height: 45px;
+			background: url('../../images/manage/btn_bg.png');
+			text-align: center;
+			line-height: 45px;
+			font-size: 14px;
+			color: #fff;
+			cursor: pointer;
+			margin-left: 32px;
+		}
+		
+		.search-input-box{
+			width:190px;
+			height: 41px;
+			box-sizing: border-box;
+			border: 1px solid #5BC7FC;
+			margin-left: 19px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			
+			.input{
+				height: 41px;
+				width: 143px;
+				padding: 5px 10px;
+				box-sizing: border-box;
+				font-size: 14px;
+				color: #fff;
+				background: transparent;
+				border: 0;
+				
+				&::placeholder{
+					color: #FFF;
+				}
+			}
+			
+			.box-btn{
+				width: 40px;
+				height: 41px;
+				background: url('../../images/manage/search.png') 4px center no-repeat;
+				background-size: 18px 18px;
+				cursor: pointer;
+			}
+		}
+	}
 </style>

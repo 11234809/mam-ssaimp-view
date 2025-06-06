@@ -289,7 +289,9 @@ onMounted(() => {
 
 onActivated(async () => {
   await getDictionary();
-  await valueBasedQuery();
+  if (store.chargeReportData && "selectTimeType" in store.chargeReportData) {
+    await valueBasedQuery(); // 只有 selectTimeType 存在时才发送请求
+  }
   await getData();
 });
 
@@ -324,8 +326,6 @@ const valueBasedQuery = async (val) => {
     const endOfYear = now.clone().endOf("year").format("YYYY-MM-DD");
     formData.checkTime = [startOfYear, endOfYear];
   }
-  console.log(store.chargeReportData, "store.chargeReportData");
-
   formData.serviceAreaId = store.chargeReportData.serviceAreaIdList;
 };
 // 删除

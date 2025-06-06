@@ -4,7 +4,7 @@
  * @Author: ysl
  * @Date: 2025-05-28 15:55:53
  * @LastEditors: ysl
- * @LastEditTime: 2025-06-05 10:58:12
+ * @LastEditTime: 2025-06-05 19:56:58
 -->
 <template>
   <div class="smart-energy">
@@ -246,11 +246,10 @@
       </div>
     </div>
     <SmartEnergyGisDialog
-      v-model="dialogVisible"
-      :data="chargeStationData"
-      :subTitle="subTitle"
-      @click="closeDialogFromParent"
-      style="background: #0f273d"
+      v-model:visible="showDialog"
+      :station-data="chargeStationData"
+      :sub-title="subTitle"
+      style="background: rgba(17, 47, 73, 0.7)"
     />
   </div>
 </template>
@@ -287,20 +286,20 @@ import {
   getSmartEnergyGF, // 光伏发电详情信息
 } from "@/api/bigScreen/index.js";
 import { bigScreen } from "@/store/bigScreen";
+import router from "@/router";
+import { doGet } from "@/utils/requestUtils";
 
 const { proxy } = getCurrentInstance();
 
 const input = ref("");
 
-const dialogVisible = ref(false);
+const showDialog = ref(false);
 
 const chargeStationData = ref({});
 const subTitle = ref("");
 const smartEnergy = ref("smartEnergy");
+const photoUrls = ref([]);
 const markerClick = async (item) => {
-  dialogVisible.value = true;
-  console.log(dialogVisible.value, "999999999999");
-  console.log(item, "markerClick");
   const typeMap = {
     1: {
       api: getSmartEnergyChargeStation,
@@ -325,13 +324,84 @@ const markerClick = async (item) => {
   };
   const config = typeMap[item.type];
 
+  showDialog.value = true;
   let res;
   // 充电站
   if (config) {
     res = await config.api({ serviceAreaName: item.serviceAreaName });
     subTitle.value = config.title;
   }
-  chargeStationData.value = res.data.records[0];
+  const stationData = res.data?.records[0] || {};
+  console.log(stationData, "stationData");
+
+  let data = {
+    ...item,
+    ...stationData,
+  };
+
+  if (item.type == 1) {
+    const stationPhotos = stationData.stationPhotos;
+    const photoUrls = stationPhotos
+      ? stationPhotos
+          .split(",")
+          .map(
+            (id) =>
+              process.env.VUE_APP_API_HOST_URL +
+              process.env.VUE_APP_API_BASE_URL +
+              `/api/pub/common/file/download?service=basServiceAreaInfoFileServiceImpl&id=${id}`
+          )
+      : [];
+    // const photoUrls =
+    //   "http://192.168.100.124:18020/api/pub/common/file/download?service=basServiceAreaInfoFileServiceImpl&id=1930539113259704321";
+    console.log(photoUrls, "photoUrls");
+    const processedPaymentMethods = parsePaymentMethods(
+      stationData.paymentMethods
+    );
+
+    chargeStationData.value = {
+      img: photoUrls,
+      paymentMethods: processedPaymentMethods,
+      ...data,
+    };
+  }
+  if (item.type == 2) {
+    chargeStationData.value = data;
+  }
+};
+const parsePaymentMethods = (input) => {
+  if (!input) return [];
+
+  if (Array.isArray(input)) return input;
+
+  try {
+    if (typeof input === "string" && input.trim().startsWith("[")) {
+      return JSON.parse(input);
+    }
+
+    return input
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  } catch (e) {
+    console.warn("支付方式解析失败，使用原始值:", input);
+    return [input];
+  }
+};
+const getPhotoUrl = async (id) => {
+  try {
+    const res = await doGet(
+      `/pub/common/file/download?service=basServiceStationFileServiceImpl&id=${id}`,
+      {}, // GET 请求不需要 data
+      { responseType: "blob" } // 如果是图片文件
+    );
+    const blob = new Blob([res], { type: res.type || "image/png" });
+    const blobUrl = URL.createObjectURL(blob);
+    console.log(blobUrl, "blobUrl");
+    return blobUrl;
+  } catch (e) {
+    console.error("获取图片失败", e);
+    return "";
+  }
 };
 
 //顶部数据
@@ -371,28 +441,28 @@ const mapLoaded = async () => {
   mapData.value = res.data.records;
   const list = [
     {
-      type: "1",
-      serviceAreaName: "垫江服务区（进城）充电站1",
+      type: "3",
+      serviceAreaName: "垫江服务区（进城）",
       lng: 108.232755,
       lat: 30.45502,
     },
   ];
   const deepCopiedRecords = JSON.parse(JSON.stringify(res.data.records));
-  console.log(deepCopiedRecords, "deepCopiedRecords");
+  // console.log(deepCopiedRecords, "deepCopiedRecords");
 
   // 转换为统一格式
   // const list = [];
   // deepCopiedRecords.forEach((item) => {
   //   if (
-  //     item.chargeStationBean &&
-  //     item.chargeStationBean.csLng != null &&
-  //     item.chargeStationBean.csLat != null
+  //     item.chargeStationBeanList &&
+  //     item.chargeStationBeanList.csLng != null &&
+  //     item.chargeStationBeanList.csLat != null
   //   ) {
   //     list.push({
   //       type: "1",
-  //       lng: Number(item.chargeStationBean.csLng),
-  //       lat: Number(item.chargeStationBean.csLat),
-  //       serviceAreaName: item.chargeStationBean.stationName,
+  //       lng: Number(item.chargeStationBeanList.csLng),
+  //       lat: Number(item.chargeStationBeanList.csLat),
+  //       serviceAreaName: item.chargeStationBeanList.stationName,
   //     });
   //   }
   //   if (
@@ -482,15 +552,19 @@ function handleSelectInformation(payload) {
 // 充电电量
 const handleChargeElec = () => {
   const data = { ...informationStatement, ...informationData };
-  // router.push({
-  //   path: "/rmt/chargeReportServiceArea",
-  //   query: data,
-  // });
+  router.push({
+    path: "/rmt/chargeReportServiceArea",
+    query: data,
+  });
   const store = bigScreen();
   store.setData(data);
-  proxy.$Bus.emit("jumpAgency", {
-    url: "/rmt/chargeReportServiceArea",
-    // data: data,
+  // proxy.$Bus.emit("jumpAgency", {
+  //   url: "/rmt/chargeReportServiceArea",
+  // data: data,
+  // });
+  router.push({
+    path: "/rmt/chargeReportServiceArea",
+    query: data,
   });
 };
 

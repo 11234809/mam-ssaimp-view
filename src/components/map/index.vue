@@ -1,5 +1,11 @@
 <template>
-  <div id="container" v-bind="$attrs">
+  <div
+    id="container"
+    v-loading="loading"
+    element-loading-background="#1c3954"
+    element-loading-text="地图资源加载中..."
+    v-bind="$attrs"
+  >
     <ul v-if="props.smartEnergy == 'smartEnergy'" class="map-legend">
       <li
         @click="legendClick('1')"
@@ -79,6 +85,8 @@ const props = defineProps({
   },
 });
 
+const loading = ref(true);
+
 const emit = defineEmits(["mapLoaded", "markerClick"]);
 
 const activeList = ref(["1", "2", "3", "4", "5"]);
@@ -95,10 +103,22 @@ function legendClick(key) {
 
 function setMarkers(list) {
   console.log(list, "2222");
+  // 检查 list 是否为空或无效
+  if (!list || list.length === 0) {
+    console.warn("Marker list is empty or invalid");
+    return;
+  }
+
+  // 检查 AMap 和 MapObj 是否可用
+  if (!AmapObj.value || !MapObj.value) {
+    console.error("AMap or Map instance is not initialized");
+    return;
+  }
+
   if (list.length === 0 || !list) return;
 
   list.map((item) => {
-    const { type, lng, lat } = item;
+    const { type, lng, lat, starNum } = item;
     let iconUrl = null;
     if (props.smartEnergy == "smartEnergy") {
       if (type === "1") {
@@ -141,21 +161,19 @@ function setMarkers(list) {
     });
     // props.smartEnergy
     let src = new URL("./img/icon-5.png", import.meta.url).href;
-    marker.setLabel({
-      content: `
+    let starHtml = "";
+    for (let i = 0; i < starNum; i++) {
+      starHtml += `<img src="${src}" />`;
+    }
+    props.smartEnergy == "smartEnergy"
+      ? ``
+      : marker.setLabel({
+          content: `
     <div onclick="labelClick(event)" style="background: transparent" class="mark-label">
-      ${
-        props.smartEnergy == "smartEnergy"
-          ? ``
-          : `<img src="${src}" />
-             <img src="${src}" />
-             <img src="${src}" />
-             <img src="${src}" />
-             <img src="${src}" />`
-      }
+      ${starHtml}
     </div>
   `,
-    });
+        });
     // 监听marker的点击事件
     AMap.event.addListener(marker, "click", function (e) {
       console.log(e.target, e.target.De.extData, "222");
@@ -180,7 +198,11 @@ window.labelClick = function labelClick(event) {
 // 地图数据配置加载完成
 function mapLoaded() {
   console.log("mapLoaded");
+
   emit("mapLoaded");
+  setTimeout(() => {
+    loading.value = false;
+  }, 1000);
 }
 
 function removeAllMarkers() {
@@ -221,89 +243,69 @@ onMounted(() => {
         extensions: "all",
         subdistrict: 0,
       });
-      districtSearch.search("重庆", function (status, result) {
-        console.log(result, "result");
-        let polygon = [];
-        // 外多边形坐标数组和内多边形坐标数组
-        const outer = [
-          new AMap.LngLat(-360, 90, true),
-          new AMap.LngLat(-360, -90, true),
-          new AMap.LngLat(360, -90, true),
-          new AMap.LngLat(360, 90, true),
-        ];
-        const holes = result.districtList[0].boundaries;
-        const mask = [];
-        for (let i = 0; i < holes.length; i++) {
-          mask.push([holes[i]]);
-        }
-        const map = new AMap.Map("container", {
-          mask: mask,
-          // 设置地图容器id
-          // pitch: 60,
-          // rotation: -35,
-          resizeEnable: true, //是否监控地图容器尺寸变化
-          // features: ['bg', 'road', 'point'], //隐藏默认楼块
-          // features: ['bg', 'road'],
-          mapStyle: "amap://styles/575ba51b9e3d994d99743667a27baa18", //设置地图的显示样式
-          // mapStyle: 'amap://styles/7daf7c6981b0bc497d78c23077f5492f',
-          // layers: [new AMap.TileLayer.Satellite()], //地图图层（卫星图层）    new AMap.TileLayer()
-          center: [107.54, 30],
-          zooms: [7, 16], //地图显示的缩放级别范围
-          viewMode: "3D",
-          zoomEnable: true, //是否缩放
-          dragEnable: true, //是否拖动
-          // showLabel: false,
-          labelIndex: 0,
-          pitch: 30,
-        });
-        MapObj.value = map;
-
-        const pathArray = [outer];
-        pathArray.push.apply(pathArray, holes);
-        polygon = new AMap.Polygon({
-          path: pathArray,
-          strokeColor: "#00BFFF", //城市边界颜色 //城市边界颜色
-          strokeWeight: 2,
-          height: 5000,
-          fillColor: "#131925", // 遮罩背景色黑色
-          fillOpacity: 1,
-        });
-        polygon.setPath(pathArray);
-        map.add(polygon);
-
-        //添加高度面
-        var object3Dlayer = new AMap.Object3DLayer({ zIndex: -1 });
-        map.add(object3Dlayer);
-        var height = -50000;
-        var color = "#0088ffcc"; //rgba
-        var wall = new AMap.Object3D.Wall({
-          path: holes,
-          height: height,
-          color: color,
-        });
-        wall.transparent = true;
-        wall.backOrFront = "both";
-        object3Dlayer.add(wall);
-
-        // 读取本地geojson文件（假设文件路径为src/assets/data/geojsondata.geojson）
-        // fetch('@/assets/data/chongqing.json')
-        //     .then((response) => response.json())
-        //     .then((geojson) => {
-        //       console.log(geojson, 'geojson')
-        // const pathArray = []
-        cqJson.features?.map((item) => {
-          console.log(item.geometry.coordinates[0], "22");
-          const polygon = new AMap.Polygon({
-            path: item.geometry.coordinates,
-            strokeColor: "#00BFFF", //城市边界颜色 //城市边界颜色
-            strokeWeight: 1,
-            fillColor: "#131925", // 遮罩背景色黑色
-            fillOpacity: 0.1,
+      districtSearch
+        .search("重庆", function (status, result) {
+          console.log(result, "result");
+          let polygon = [];
+          // 外多边形坐标数组和内多边形坐标数组
+          const outer = [
+            new AMap.LngLat(-360, 90, true),
+            new AMap.LngLat(-360, -90, true),
+            new AMap.LngLat(360, -90, true),
+            new AMap.LngLat(360, 90, true),
+          ];
+          const holes = result.districtList[0].boundaries;
+          const mask = [];
+          for (let i = 0; i < holes.length; i++) {
+            mask.push([holes[i]]);
+          }
+          const map = new AMap.Map("container", {
+            mask: mask,
+            // 设置地图容器id
+            // pitch: 60,
+            // rotation: -35,
+            resizeEnable: true, //是否监控地图容器尺寸变化
+            // features: ['bg', 'road', 'point'], //隐藏默认楼块
+            // features: ['bg', 'road'],
+            mapStyle: "amap://styles/575ba51b9e3d994d99743667a27baa18", //设置地图的显示样式
+            // mapStyle: 'amap://styles/7daf7c6981b0bc497d78c23077f5492f',
+            // layers: [new AMap.TileLayer.Satellite()], //地图图层（卫星图层）    new AMap.TileLayer()
+            center: [107.54, 30],
+            zooms: [7, 16], //地图显示的缩放级别范围
+            viewMode: "3D",
+            zoomEnable: true, //是否缩放
+            dragEnable: true, //是否拖动
+            // showLabel: false,
+            labelIndex: 0,
+            pitch: 30,
           });
-          wall.transparent = true
-          wall.backOrFront = 'both';
-          object3Dlayer.add(wall)
+          MapObj.value = map;
 
+          const pathArray = [outer];
+          pathArray.push.apply(pathArray, holes);
+          polygon = new AMap.Polygon({
+            path: pathArray,
+            strokeColor: "#00BFFF", //城市边界颜色 //城市边界颜色
+            strokeWeight: 2,
+            fillColor: "#131925", // 遮罩背景色黑色
+            fillOpacity: 1,
+          });
+          polygon.setPath(pathArray);
+          map.add(polygon);
+
+          //添加高度面
+          var object3Dlayer = new AMap.Object3DLayer({ zIndex: -1 });
+          map.add(object3Dlayer);
+          var height = -50000;
+          var color = "#0088ffcc"; //rgba
+          var wall = new AMap.Object3D.Wall({
+            path: holes,
+            height: height,
+            color: color,
+          });
+          wall.transparent = true;
+          wall.backOrFront = "both";
+          object3Dlayer.add(wall);
 
           // 读取本地geojson文件（假设文件路径为src/assets/data/geojsondata.geojson）
           // fetch('@/assets/data/chongqing.json')
@@ -311,38 +313,54 @@ onMounted(() => {
           //     .then((geojson) => {
           //       console.log(geojson, 'geojson')
           // const pathArray = []
-          cqJson.features?.map(item => {
-            console.log(item.geometry.coordinates[0], '22')
+          cqJson.features?.map((item) => {
+            //  console.log(item.geometry.coordinates[0], "22");
             const polygon = new AMap.Polygon({
               path: item.geometry.coordinates,
-              strokeColor: '#00BFFF', //城市边界颜色 //城市边界颜色
+              strokeColor: "#00BFFF", //城市边界颜色 //城市边界颜色
               strokeWeight: 1,
-              fillColor: '#131925', // 遮罩背景色黑色
-              fillOpacity: .1
-            })
-            map.add(polygon)
-            // pathArray.push(polygon)
-            //   })
-            //   // 加载geojson数据
-          })
+              fillColor: "#131925", // 遮罩背景色黑色
+              fillOpacity: 0.1,
+            });
+            wall.transparent = true;
+            wall.backOrFront = "both";
+            object3Dlayer.add(wall);
 
-          // 创建一个 Marker 实例：
-          // const marker = new AMap.Marker({
-          //   position: [108.232755,30.45502],   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
-          //   title: 'hhhhhh',
-          //   // icon: icon
-          // });
-          // map.add(marker)
+            // 读取本地geojson文件（假设文件路径为src/assets/data/geojsondata.geojson）
+            // fetch('@/assets/data/chongqing.json')
+            //     .then((response) => response.json())
+            //     .then((geojson) => {
+            //       console.log(geojson, 'geojson')
+            // const pathArray = []
+            cqJson.features?.map((item) => {
+              // console.log(item.geometry.coordinates[0], '22')
+              const polygon = new AMap.Polygon({
+                path: item.geometry.coordinates,
+                strokeColor: "#00BFFF", //城市边界颜色 //城市边界颜色
+                strokeWeight: 1,
+                fillColor: "#131925", // 遮罩背景色黑色
+                fillOpacity: 0.1,
+              });
+              map.add(polygon);
+              // pathArray.push(polygon)
+              //   })
+              //   // 加载geojson数据
+            });
 
+            // 创建一个 Marker 实例：
+            // const marker = new AMap.Marker({
+            //   position: [108.232755,30.45502],   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+            //   title: 'hhhhhh',
+            //   // icon: icon
+            // });
+            // map.add(marker)
 
-          mapLoaded()
+            mapLoaded();
+          });
         })
-
-
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+        .catch((e) => {
+          console.log(e);
+        });
     })
     .catch((e) => {
       console.log(e);
@@ -360,6 +378,7 @@ defineExpose({
   width: 100%;
   height: 100%;
   position: relative;
+  background: #000;
 
   ::v-deep(.amap-marker-label) {
     background: transparent;
