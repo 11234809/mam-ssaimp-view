@@ -1,20 +1,3 @@
-/*
- * @Descripttion: 
- * @version: 
- * @Author: ysl
- * @Date: 2025-05-29 11:23:19
-<<<<<<< HEAD
- * @LastEditors: ysl
- * @LastEditTime: 2025-06-06 15:56:21
-=======
- * @LastEditors: lkr
-<<<<<<< HEAD
- * @LastEditTime: 2025-06-06 10:21:18
-=======
- * @LastEditTime: 2025-06-05 17:18:43
->>>>>>> 8827d5287fba2374fc780e2fee457c1b157dfaf2
->>>>>>> dbace12ad1ac50055d8cff5dd546ec4608a8bcc3
- */
 import { http } from "mam-base-ui";
 import { doPost, doGet } from '@/utils/requestUtils'
 

@@ -136,13 +136,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed, nextTick } from "vue";
+import { ref, reactive, onMounted, computed, nextTick,onActivated } from "vue";
 import moment from "moment";
 import { ElMessage } from "element-plus";
 import { queryPage } from "@/api/statisticalForm/dailyRecord.js";
 import { getCompany, getServiceAreaInfo} from "@/api/dictionaryApi.js";
 import { downFilePOST } from "@/api/manage";
 import { DateQuarter } from "mam-base-ui";
+import { useRouter,useRoute } from "vue-router";
+import { bigScreen } from "@/store/bigScreen";
+
 const title = ref('')
 const dateData = ref({
     date: moment().format('YYYY-MM-DD'),
@@ -447,7 +450,100 @@ const selectTimeTypeChange = (val) => {
         ];
     }
 }
+// 带值查询
+const bigScreenData = ref({}); //大屏数据
+const route = useRoute();
+const store = bigScreen();
+const valueBasedQuery = async (val) => {
+  if (!route.query || Object.keys(route.query).length === 0) {
+    const timeTypeMap = {
+      0: "0", //昨日、小时
+      1: "0", // 日
+      2: "1", // 周
+      3: "2", // 月
+      4: "3", // 季
+      5: "4", // 年
+      6: "5", // 其他
+    };
+    bigScreenData.value = store.chargeReportData;
+    const mappedCode = timeTypeMap[bigScreenData.value.selectTimeType];
+    formData.selectTimeType = mappedCode;
+    if (mappedCode == "0") {
+      formData.time = moment().subtract(1, "day").format("YYYY-MM-DD");
+    } else if (mappedCode == "1") {
+      formData.time = moment().format("YYYY-MM-DD");
+      let startDate = moment(formData.time)
+        .clone()
+        .startOf("isoWeek")
+        .format("YYYY-MM-DD");
+      let weekEnd = moment(formData.time)
+        .clone()
+        .endOf("isoWeek")
+        .format("YYYY-MM-DD");
+      formData.timeList = [startDate, weekEnd];
+    } else if (mappedCode == "2") {
+      formData.time = moment().format("YYYY-MM");
+    } else if (mappedCode == "3") {
+      await nextTick(() => {
+        let nowYear = moment().year();
+        let nowQuarter = moment().quarter();
+        seasonSelect.value.getDefaultTimeNow();
+        seasonChange(nowYear, nowQuarter, "");
+      });
+    } else if (mappedCode == "4") {
+      formData.time = moment().format("YYYY");
+    } else if (mappedCode == "5") {
+      formData.timeList = [
+        bigScreenData.value.dateRange[0],
+        bigScreenData.value.dateRange[1],
+      ];
+    }
+    formData.serviceName = bigScreenData.value.serviceAreaIdList
+      ? bigScreenData.value.serviceAreaIdList
+      : [];
+    formData.serviceAreaId = Array.isArray(
+      bigScreenData.value.serviceAreaIdList
+    )
+      ? bigScreenData.value.serviceAreaIdList.join(",")
+      : bigScreenData.value.serviceAreaIdList;
+  } else {
+    formData.selectTimeType =
+      route.query && route.query.selectTimeType
+        ? route.query.selectTimeType
+        : "0";
 
+    formData.serviceName =
+      route.query && route.query.serviceAreaIdList
+        ? route.query.serviceAreaIdList
+        : route.query && route.query.serviceAreaId
+        ? route.query.serviceAreaId.split(",")
+        : [];
+
+    formData.serviceAreaId = Array.isArray(route.query?.serviceAreaIdList)
+      ? route.query.serviceAreaIdList.join(",")
+      : route.query?.serviceAreaIdList ??
+        (Array.isArray(route.query?.serviceAreaId)
+          ? route.query.serviceAreaId.join(",")
+          : "");
+    if (route.query.selectTimeType == "3") {
+      const result = getDateInfo(
+        route.query.timeList[0],
+        route.query.timeList[1]
+      );
+      nextTick(() => {
+        seasonSelect.value.getDefaultTimeNow();
+        seasonChange(result.year, result.monthDiff, "");
+      });
+    }
+    if (route.query.time) {
+      formData.time = route.query.time;
+    } else if (route.query.timeList) {
+      formData["timeList"] = route.query.timeList;
+    } else {
+      formData.time = moment().subtract(1, "day").format("YYYY-MM-DD");
+    }
+  }
+};
 const getData = async () => {
     // 查询
     let resultDate = getResultDate();
@@ -537,7 +633,12 @@ const handleSizeChange = (val) => {
     pageSize.value = val;
     getData();
 };
-
+//路由跳转查询
+onActivated(async () => {
+  await valueBasedQuery();
+  // await jumpSearchFormChange();
+  await getData();
+});
 onMounted(() => {
     getDictionary();
     getData();

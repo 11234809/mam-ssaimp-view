@@ -1,5 +1,4 @@
 import * as echarts from "echarts";
-import { min } from "moment";
 
 
 const getRowBarOption = (data,config) => {
@@ -57,7 +56,7 @@ const getRowBarOption = (data,config) => {
 	dataZoom: [
 	    {
 	        // 设置滚动条的隐藏或显示
-	        show: true,
+	        show: false,
 	        // 设置类型
 	        type: "slider",
 	        // 设置背景颜色
@@ -738,7 +737,7 @@ const get3DBarOption = (data, config) => {
   echarts.graphic.registerShape("CubeLeft", CubeLeft);
   echarts.graphic.registerShape("CubeRight", CubeRight);
   echarts.graphic.registerShape("CubeTop", CubeTop);
-  const VALUE = data.map(x=>x.newEnergyTraffic);
+  const VALUE = data.series;
   //  [
   //   2012, 1230, 3790, 2349, 1654, 1230, 3790, 2349, 1654, 3790, 2349, 1654,
   // ];
@@ -750,7 +749,7 @@ const get3DBarOption = (data, config) => {
     },
     xAxis: {
       type: "category",
-      data: data.map(x=>x.serviceName),
+      data: data.xAxis,
       axisLine: {
         show: true,
         lineStyle: {

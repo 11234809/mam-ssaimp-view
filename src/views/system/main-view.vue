@@ -296,6 +296,10 @@ export default {
         this.menuName = "/statisticalForm/dailyRecord";
         this.$router.push({ path: "/statisticalForm/dailyRecord" });
         this.hanldSelect("/statisticalForm/dailyRecord", "");
+      } else if (this.$route.path == '/statisticalForm/publicSatisfy') {
+        this.menuName = "/statisticalForm/publicSatisfy";
+        this.$router.push({ path: "/statisticalForm/publicSatisfy" });
+        this.hanldSelect("/statisticalForm/publicSatisfy", "");
       }  else if (this.$route.path == "/daily/routineInspection/manager") {
 		  //巡检信息
         this.menuName = "/daily/routineInspection/manager";
